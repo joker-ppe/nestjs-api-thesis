@@ -1,0 +1,15 @@
+version: '3.8'
+services:
+  mhz-database:
+    image: postgres:16.0
+    container_name: mhz-database
+    ports:
+      - 5432:5432 #{port in host(myPC)} : {port in Container}
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: dbKey6868Mhz
+      POSTGRES_DB: thesisdb
+    networks:
+      - nestjs-network
+networks:
+  nestjs-network:

@@ -74,7 +74,7 @@ Nest is [MIT licensed](LICENSE).
 
 
 
-<h3 id="deploy-server">2.3. Deploy server</h3>
+<h3 id="deploy-server">Deploy server</h3>
 <p>Chạy từng dòng lệnh sau:<br>
 <strong>(lưu ý: có những trường hợp yều cầu lựa chọn Y/N<br>
 =&gt; gõ <code>y</code><br>

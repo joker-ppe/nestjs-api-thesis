@@ -3,6 +3,8 @@
 # open port
 sudo ufw enable
 
+sudo ufw allow 22/tcp
+
 sudo ufw allow 5432
 
 sudo ufw allow 3003

@@ -71,3 +71,22 @@ Nest is an MIT-licensed open source project. It can grow thanks to the sponsors 
 ## License
 
 Nest is [MIT licensed](LICENSE).
+
+
+
+<h3 id="deploy-server">2.3. Deploy server</h3>
+<p>Chạy từng dòng lệnh sau:<br>
+<strong>(lưu ý: có những trường hợp yều cầu lựa chọn Y/N<br>
+=&gt; gõ <code>y</code><br>
+=&gt; <code>Enter</code>)</strong></p>
+<blockquote>
+<p>git clone <a href="https://github.com/joker-ppe/nestjs-api-thesis.git">https://github.com/joker-ppe/nestjs-api-thesis.git</a></p>
+</blockquote>
+<blockquote>
+<p>cd nestjs-api-thesis</p>
+</blockquote>
+<blockquote>
+<p>chmod +x <a href="http://script.sh">script.sh</a></p>
+</blockquote>
+<blockquote>
+<p>./script.sh</p>

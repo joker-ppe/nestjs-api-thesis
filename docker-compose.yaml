@@ -11,5 +11,14 @@ services:
       POSTGRES_DB: thesisdb
     networks:
       - nestjs-network
+  api:
+    image: voixmomotalk/nestjs-thesis-api
+    container_name: mhz-api
+    ports:
+      - 3003:3003
+    # depends_on:
+    #   - mhz-database
+    networks:
+      - nestjs-network
 networks:
   nestjs-network:

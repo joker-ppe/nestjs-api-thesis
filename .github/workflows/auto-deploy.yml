@@ -4,25 +4,14 @@ on:
   push:
     branches:
       - main
-
 jobs:
-  ssh:
+  deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Check out code
-        uses: actions/checkout@v2
-
-      - name: Install SSH
-        run: sudo apt-get install openssh-client -y
-
-      - name: Create SSH directory and known_hosts file
-        run: mkdir -p ~/.ssh && touch ~/.ssh/known_hosts
-
-      - name: Setup SSH agent
-        uses: actions/setup-ssh-action@v3
-        with:
-          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
-
-      - name: SSH to VPS and Run Script
-        run: |
-          ssh root@45.117.169.7 'cd nestjs-api-thesis/ && ./script_update.sh'
+    - name: Deploy to VPS
+      uses: appleboy/ssh-action@master
+      with:
+        username: root
+        host: 45.117.169.7
+        password: ${{ secrets.SSH_PASSWORD }}
+        script: 'cd nestjs-api-thesis/ && ./script_update.sh'

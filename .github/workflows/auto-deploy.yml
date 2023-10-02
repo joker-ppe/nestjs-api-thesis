@@ -15,9 +15,11 @@ jobs:
       - name: Install SSH
         run: sudo apt-get install openssh-client -y
 
+      - name: Run ssh-keyscan
+        run: ssh-keyscan -t rsa 45.117.169.7 >> ~/.ssh/known_hosts
+
       - name: Setup SSH key
         run: |
-          ssh-keyscan -t rsa 45.117.169.7 >> ~/.ssh/known_hosts
           cat ${{ secrets.SSH_PRIVATE_KEY }}
 
       - name: SSH to VPS

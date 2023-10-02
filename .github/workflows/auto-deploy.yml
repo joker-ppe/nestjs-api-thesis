@@ -13,8 +13,8 @@ jobs:
     - name: Executing remote command
       uses: appleboy/ssh-action@master
       with:
-        host: ${{ secrets.HOST }}
-        USERNAME: ${{ secrets.USERNAME }}
+        host: ${{ secrets.SSH_HOST }}
+        USERNAME: ${{ secrets.SSH_USERNAME }}
         PORT: 22
         KEY: ${{ secrets.SSH_PRIVATE_KEY }}
         script: cd nestjs-api-thesis/ && ./script_update.sh

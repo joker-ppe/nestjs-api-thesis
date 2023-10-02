@@ -87,7 +87,7 @@ Nest is [MIT licensed](LICENSE).
 </blockquote>
 <blockquote>
 <p>chmod +x <a href="http://script.sh">script.sh</a></p>
-<p>chmod +x <a href="http://script.sh">scrip_update.sh</a></p>
+<p>chmod +x <a href="http://script.sh">script_update.sh</a></p>
 </blockquote>
 <blockquote>
 <p>./script.sh</p>

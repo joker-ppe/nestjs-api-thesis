@@ -1,4 +1,4 @@
-git pull
+sudo git pull
 
 sudo docker-compose down
 

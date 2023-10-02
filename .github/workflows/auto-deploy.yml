@@ -1,34 +1,31 @@
 name: SSH to VPS - Auto deploy
 
 on:
- push:
-  branches:
-   - main
+  push:
+    branches:
+      - main
 
 jobs:
- ssh:
-  runs-on: ubuntu-latest
-  steps:
-   - name: Check out code
-     uses: actions/checkout@v2
+  ssh:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v2
 
-   - name: Install SSH
-     run: sudo apt-get install openssh-client -y
+      - name: Install SSH
+        run: sudo apt-get install openssh-client -y
 
-   - name: Create SSH directory and known_hosts file
-     run: mkdir -p ~/.ssh && touch ~/.ssh/known_hosts
+      - name: Create SSH directory and known_hosts file
+        run: mkdir -p ~/.ssh && touch ~/.ssh/known_hosts
 
-   - name: Grant permission to known_hosts file
-     run: chmod 600 ~/.ssh/known_hosts
+      - name: Setup SSH agent
+        uses: webfactory/ssh-agent@v1
 
-   - name: Run ssh-keyscan
-     run: ssh-keyscan -t rsa 45.117.169.7 >> ~/.ssh/known_hosts
+      - name: Setup SSH key
+        run: echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
 
-   - name: Setup SSH key
-     run: echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
-     env:
-      SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-
-   - name: SSH to VPS and Run Script
-     run: |
-      ssh -i ~/.ssh/id_rsa root@45.117.169.7 'cd nestjs-api-thesis/ && ./script_update.sh'
+      - name: SSH to VPS and Run Script
+        run: |
+          ssh -i ~/.ssh/id_rsa root@45.117.169.7 'cd nestjs-api-thesis/ && ./script_update.sh'

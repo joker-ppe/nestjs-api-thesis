@@ -1,20 +1,27 @@
-name: Auto Deploy
+name: SSH to VPS - Auto deploy
 
 on:
   push:
     branches:
-      - main # 
+      - main
 
 jobs:
-  deploy:
+  ssh:
     runs-on: ubuntu-latest
-
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
+      - name: Check out code
+        uses: actions/checkout@v2
 
-    - name: SSH into VPS and Run Update Script
-      run: |
-        ssh root@45.117.169.7 "cd nestjs-api-thesis/ && ./script_update.sh"
-      env:
-        PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+      - name: Install SSH
+        run: sudo apt-get install openssh-client -y
+
+      - name: Setup SSH key
+        run: |
+          ssh-keyscan -t rsa 45.117.169.7 >> ~/.ssh/known_hosts
+          cat ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: SSH to VPS
+        run: |
+          ssh -i ~/.ssh/id_rsa root@45.117.169.7
+          cd nestjs-api-thesis/ && ./script_update.sh
+          exit

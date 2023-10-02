@@ -18,6 +18,6 @@ jobs:
         PORT: 22
         KEY: ${{ secrets.SSH_KEY }}
         script: |
-          cd nestjs-api-thesis/
+          # cd nestjs-api-thesis/
           ls
 

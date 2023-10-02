@@ -32,6 +32,8 @@ sudo curl -L https://github.com/docker/compose/releases/download/v2.5.0/docker-c
 
 sudo chmod +x /usr/local/bin/docker-compose
 
+sudo chmod 666 /var/run/docker.sock
+
 docker-compose --version
 
 # build docker-compose

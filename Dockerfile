@@ -18,7 +18,7 @@ COPY . .
 # RUN prisma migrate deploy
 
 # Expose the port that your Nest.js application will run on
-EXPOSE 3000
+EXPOSE 3003
 
 # Define the command to start your Nest.js application
 CMD ["yarn", "start"]

@@ -1,0 +1,20 @@
+name: Auto Deploy
+
+on:
+  push:
+    branches:
+      - main # 
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: SSH into VPS and Run Update Script
+      run: |
+        ssh root@45.117.169.7 "cd nestjs-api-thesis/ && ./script_update.sh"
+      env:
+        PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}

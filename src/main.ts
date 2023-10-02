@@ -12,7 +12,7 @@ async function bootstrap() {
     .addBearerAuth()
     .setTitle('Planned Irrigation System API')
     .setDescription('by Nguyễn Minh Hiếu MSE#11')
-    .setVersion('1.0.0')
+    .setVersion('1.0.1')
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('docs', app, document);

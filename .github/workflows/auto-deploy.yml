@@ -19,5 +19,5 @@ jobs:
         KEY: ${{ secrets.SSH_KEY }}
         script: |
           cd nestjs-api-thesis/
-          ./script_update.sh
+          ls
 

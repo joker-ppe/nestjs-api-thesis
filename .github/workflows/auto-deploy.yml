@@ -9,9 +9,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Deploy to VPS
-      uses: appleboy/ssh-action@v1.0.0
+      uses: fifsky/ssh-action@master
       with:
-        username: ${{ secrets.SSH_USERNAME }}
-        host: ${{ secrets.SSH_HOST }}
-        password: ${{ secrets.SSH_PASSWORD }}
-        script: 'cd nestjs-api-thesis/ && ./script_update.sh'
+        command: |
+          cd nestjs-api-thesis/
+          ./script_update.sh
+        host: ${{ secrets.HOST }}
+        user: root
+        key: ${{ secrets.SSH_PRIVATE_KEY}}
+

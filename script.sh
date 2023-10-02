@@ -1,4 +1,5 @@
 #!/bin/bash
+rm -r nestjs-api-thesis/
 
 # open port
 sudo ufw enable
@@ -34,4 +35,4 @@ sudo chmod +x /usr/local/bin/docker-compose
 docker-compose --version
 
 # build docker-compose
-sudo docker-compose up
+sudo docker-compose up -d

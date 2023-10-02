@@ -17,5 +17,7 @@ jobs:
         USERNAME: ${{ secrets.SSH_USERNAME }}
         PORT: 22
         PASSWORD: ${{ secrets.SSH_PASSWORD }}
-        script: cd nestjs-api-thesis/ && ./script_update.sh
+        script: |
+          cd nestjs-api-thesis/
+          ./script_update.sh
 

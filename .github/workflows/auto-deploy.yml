@@ -8,13 +8,14 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-    - name: Deploy to VPS
-      uses: fifsky/ssh-action@master
+    - uses: actions/checkout@v1
+    
+    - name: Executing remote command
+      uses: appleboy/ssh-action@master
       with:
-        command: |
-          cd nestjs-api-thesis/
-          ./script_update.sh
         host: ${{ secrets.HOST }}
-        user: root
-        key: ${{ secrets.SSH_PRIVATE_KEY}}
+        USERNAME: ${{ secrets.USERNAME }}
+        PORT: 22
+        KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+        script: cd nestjs-api-thesis/ && ./script_update.sh
 

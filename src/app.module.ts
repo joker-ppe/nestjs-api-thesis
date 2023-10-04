@@ -16,6 +16,6 @@ import { ScheduleModule } from './schedule/schedule.module';
     }),
     ScheduleModule,
   ],
-  // controllers: [ScheduleController],
+  // controllers: [],
 })
 export class AppModule {}

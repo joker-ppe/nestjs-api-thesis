@@ -2,6 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { DateTime } from 'luxon';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -22,20 +23,15 @@ async function bootstrap() {
 
   git.getLastCommit(function (err, commit) {
     // read commit object properties
-    // console.log(commit['committedOn']);
+    // console.log(err);
+    // console.log(commit);
 
     const unixTimestamp = commit['committedOn']; // Replace with your timestamp
-    const date = new Date(unixTimestamp * 1000); // Multiply by 1000 to convert to milliseconds
+    const date = DateTime.fromMillis(unixTimestamp * 1000, {
+      zone: 'Asia/Ho_Chi_Minh',
+    });
 
-    const day = date.getDate().toString().padStart(2, '0');
-    const month = (date.getMonth() + 1).toString().padStart(2, '0'); // Month is zero-based, so add 1
-    const year = date.getFullYear();
-    const hours = date.getHours().toString().padStart(2, '0');
-    const minutes = date.getMinutes().toString().padStart(2, '0');
-    const seconds = date.getSeconds().toString().padStart(2, '0');
-    const ampm = date.getHours() >= 12 ? 'pm' : 'am';
-
-    const formattedDate = `${day}/${month}/${year}, ${hours}:${minutes}:${seconds} ${ampm}`;
+    const formattedDate = date.toFormat('dd/MM/yyyy, HH:mm:ss');
 
     console.log(formattedDate);
 

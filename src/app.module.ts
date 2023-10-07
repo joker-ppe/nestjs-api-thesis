@@ -13,6 +13,7 @@ import { ScheduleModule } from './schedule/schedule.module';
     PrismaModule,
     ConfigModule.forRoot({
       isGlobal: true,
+      // envFilePath: `.env.${process.env.NODE_ENV}`,
     }),
     ScheduleModule,
   ],

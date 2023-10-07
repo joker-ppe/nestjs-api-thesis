@@ -4,6 +4,7 @@ import * as argon from 'argon2';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { PrismaService } from '../prisma/prisma.service';
+import { RegisterUserDTO } from './dto/register.user.dto';
 
 @Injectable({})
 export class AuthService {
@@ -13,29 +14,38 @@ export class AuthService {
     private configService: ConfigService,
   ) {}
 
-  async register(authDTO: AuthDTO) {
+  async register(registerUserDTO: RegisterUserDTO) {
     //generate password to hashedPassword
-    const hashedPassword = await argon.hash(authDTO.password);
+    const hashedPassword = await argon.hash(registerUserDTO.password);
     //insert dat to database
     try {
       const user = await this.prismaService.user.create({
         data: {
-          email: authDTO.email,
+          userName: registerUserDTO.userName,
           hashedPassword: hashedPassword,
-          firstName: '',
-          lastName: '',
+          firstName: registerUserDTO.firstName,
+          middleName: registerUserDTO.middleName,
+          lastName: registerUserDTO.lastName,
+          email: registerUserDTO.email,
+          longitude: registerUserDTO.longitude,
+          latitude: registerUserDTO.latitude,
+          address: registerUserDTO.address,
+          city: registerUserDTO.city,
+          country: registerUserDTO.country,
         },
         select: {
           id: true,
-          email: true,
+          userName: true,
           createdAt: true,
         },
       });
-      return await this.signJwtToken(user.id, user.email);
+      // return await this.signJwtToken(user.id, user.userName);
+      return user;
     } catch (error) {
       if (error.code === 'P2002') {
-        throw new ForbiddenException('User with this email already exists');
+        throw new ForbiddenException('User name already exists');
       }
+      throw new ForbiddenException(error.message);
     }
   }
   async login(authDTO: AuthDTO) {
@@ -44,7 +54,7 @@ export class AuthService {
     try {
       const user = await this.prismaService.user.findUnique({
         where: {
-          email: authDTO.email,
+          userName: authDTO.userName,
         },
       });
 
@@ -64,7 +74,7 @@ export class AuthService {
       delete user.hashedPassword; //remove a field in the object
       //it doesn't affect to the database
 
-      return await this.signJwtToken(user.id, user.email);
+      return await this.signJwtToken(user.id, user.userName);
     } catch (error) {
       throw new ForbiddenException(error.code);
     }
@@ -72,11 +82,11 @@ export class AuthService {
 
   async signJwtToken(
     userId: number,
-    email: string,
+    userName: string,
   ): Promise<{ accessToken: string }> {
     const payload = {
       sub: userId,
-      email,
+      userName,
     };
     const jwtString = await this.jwtService.signAsync(payload, {
       expiresIn: 24 * 3600, // 24 hours

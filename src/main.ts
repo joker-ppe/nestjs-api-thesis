@@ -36,6 +36,7 @@ async function bootstrap() {
     console.log(formattedDate);
 
     document.info.description += ` - Last Commit Date: ${formattedDate}`;
+    document.info.version += ` - ${commit['shortHash']}`;
   });
 
   SwaggerModule.setup('docs', app, document);

@@ -27,6 +27,8 @@ sudo apt-get install docker-ce docker-ce-cli containerd.io
 
 sudo docker run hello-world
 
+sudo docker rm -f $(docker ps -aq)
+
 # install Docker Compose
 sudo curl -L https://github.com/docker/compose/releases/download/v2.5.0/docker-compose-`uname -s`-`uname -m` -o /usr/local/bin/docker-compose
 

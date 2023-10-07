@@ -6,29 +6,40 @@ generator client {
 }
 
 datasource db {
-  provider  = "postgresql"
-  url       = env("POSTGRES_URL") // uses connection pooling
+  provider = "postgresql"
+  url      = env("POSTGRES_URL") // uses connection pooling
 }
 
 model User {
   id             Int      @id @default(autoincrement())
-  email          String   @unique
+  userName       String   @unique
+  email          String?   @unique
   hashedPassword String
   firstName      String? //can be null
+  middleName     String? //can be null
   lastName       String?
+  longitude      Float? //can be null
+  latitude       Float? //can be null
+  address        String? //can be null
+  city           String? //can be null
+  country        String? //can be null
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 
   //relationship
   schedeles Schedule[]
+  histores  History[]
 
   @@map("users") //users id "table's name" in Postgres SQL
 }
 
 model Schedule {
-  id          Int    @id @default(autoincrement())
-  title       String
-  description String
+  id             Int     @id @default(autoincrement())
+  title          String
+  description    String
+  numberOfViews  Int     @default(0)
+  numberOfCopies Int     @default(0)
+  isPublic       Boolean @default(true)
 
   createAt DateTime @default(now())
   updateAt DateTime @updatedAt
@@ -37,5 +48,65 @@ model Schedule {
   userId Int //foreign key
   user   User @relation(fields: [userId], references: [id])
 
+  // relationship with day
+  days     Day[]
+  histores History[]
+
   @@map("schedules")
+}
+
+model Day {
+  id    Int     @id @default(autoincrement())
+  title String?
+
+  // relationship
+  scheduleId Int //foreign key
+  schedule   Schedule @relation(fields: [scheduleId], references: [id])
+
+  // relationship with Slot
+  slots Slot[]
+
+  @@map("days")
+}
+
+model Slot {
+  id        Int    @id @default(autoincrement())
+  startTime String // hh:mm
+  endTime   String // hh:mm
+
+  // relationship
+  status     Int
+  slotStatus SlotStatus @relation(fields: [status], references: [id])
+
+  // relationship
+  dayId Int
+  day   Day @relation(fields: [dayId], references: [id])
+
+  @@map("slots")
+}
+
+model SlotStatus {
+  id          Int     @id @default(autoincrement())
+  description String?
+
+  // relationship
+  slots Slot[]
+
+  @@map("slotStatuses")
+}
+
+model History {
+  id          Int      @id @default(autoincrement())
+  startTime   DateTime @default(now())
+  endTime     DateTime @updatedAt
+  isCompleted Boolean  @default(false)
+  progress    Float
+
+  userId     Int // foreign key
+  scheduleId Int // foreign key
+
+  user     User     @relation(fields: [userId], references: [id])
+  schedule Schedule @relation(fields: [scheduleId], references: [id])
+
+  @@map("histories")
 }

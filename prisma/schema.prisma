@@ -13,7 +13,7 @@ datasource db {
 model User {
   id             Int      @id @default(autoincrement())
   userName       String   @unique
-  email          String?   @unique
+  email          String?  @unique
   hashedPassword String
   firstName      String? //can be null
   middleName     String? //can be null

@@ -77,7 +77,7 @@ model Slot {
 
   // relationship
   status     Int @default(1)
-  slotStatus SlotStatus @relation(fields: [status], references: [id])
+  // slotStatus SlotStatus @relation(fields: [status], references: [id])
 
   // relationship
   dayId Int
@@ -91,7 +91,7 @@ model SlotStatus {
   description String?
 
   // relationship
-  slots Slot[]
+  // slots Slot[]
 
   @@map("slotStatuses")
 }

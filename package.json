@@ -12,7 +12,7 @@
     "db:dev:restart": "yarn db:dev:remove && yarn db:dev:create && sleep 2 && yarn prisma:dev:deploy",
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
-    "start": "sleep 2 && npx prisma migrate deploy && npx prisma generate && sleep 2 && nest start",
+    "start": "sleep 1 && npx prisma migrate deploy && npx prisma generate && sleep 1 && nest start",
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",

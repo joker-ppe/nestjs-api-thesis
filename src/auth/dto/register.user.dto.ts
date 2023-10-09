@@ -13,15 +13,15 @@ export class RegisterUserDTO {
   @ApiProperty()
   userName: string;
 
-  @IsEmail()
-  @IsOptional()
-  @ApiProperty()
-  email?: string;
-
   @IsString()
   @IsNotEmpty()
   @ApiProperty()
   password: string;
+
+  @IsEmail()
+  @IsOptional()
+  @ApiProperty()
+  email?: string;
 
   @IsString()
   @IsOptional()

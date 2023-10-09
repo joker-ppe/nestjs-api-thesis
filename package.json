@@ -6,7 +6,7 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
-    "prisma:dev:deploy": "npx prisma migrate dev && prisma migrate deploy",
+    "prisma:dev:deploy": "npx prisma migrate dev && npx prisma migrate deploy",
     "db:dev:create": "docker compose up mhz-database --detach",
     "db:dev:remove": "docker compose rm mhz-database --stop --force --volumes",
     "db:dev:restart": "yarn db:dev:remove && yarn db:dev:create && sleep 2 && yarn prisma:dev:deploy",

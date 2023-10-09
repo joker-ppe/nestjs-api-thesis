@@ -1,42 +1,73 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
-import { InsertScheduleDTO, UpdateScheduleDTO } from './dto';
+import { ScheduleDTO } from './dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class ScheduleService {
   constructor(private prismaService: PrismaService) {}
 
-  getSchedules(userId: number) {
-    const schedules = this.prismaService.schedule.findMany({
+  async getSchedules(userId: number) {
+    const schedules = await this.prismaService.schedule.findMany({
       where: {
         userId: userId,
+      },
+      include: {
+        days: {
+          include: {
+            slots: true,
+          },
+        },
       },
     });
     return schedules;
   }
 
-  getScheduleById(scheduleId: number) {
-    const schedule = this.prismaService.schedule.findUnique({
+  async getScheduleById(scheduleId: number) {
+    const schedule = await this.prismaService.schedule.findUnique({
       where: {
         id: scheduleId,
       },
+      include: {
+        days: {
+          include: {
+            slots: true,
+          },
+        },
+      },
     });
+
+    if (!schedule) {
+      throw new ForbiddenException('Schedule is not exist.');
+    }
+
     return schedule;
   }
 
-  async insertSchedule(userId: number, insertScheduleDTO: InsertScheduleDTO) {
+  async insertSchedule(scheduleDTO: ScheduleDTO) {
     const schedule = await this.prismaService.schedule.create({
       data: {
-        ...insertScheduleDTO,
-        userId,
+        title: scheduleDTO.title,
+        description: scheduleDTO.description,
+        userId: scheduleDTO.userId,
+        days: {
+          create: scheduleDTO.days.map((dayDTO) => ({
+            title: dayDTO.title,
+            slots: {
+              create: dayDTO.slots.map((slotDTO) => ({
+                startTime: slotDTO.startTime,
+                endTime: slotDTO.endTime,
+              })),
+            },
+          })),
+        },
       },
     });
 
     return schedule;
   }
 
-  updateSchedule(scheduleId: number, updateScheduleDTO: UpdateScheduleDTO) {
-    const schedule = this.prismaService.schedule.findUnique({
+  async updateSchedule(scheduleId: number, scheduleDTO: ScheduleDTO) {
+    const schedule = await this.prismaService.schedule.findUnique({
       where: {
         id: scheduleId,
       },
@@ -46,11 +77,42 @@ export class ScheduleService {
       throw new ForbiddenException('Schedule is not exist.');
     }
 
-    return this.prismaService.schedule.update({
+    // delete old data of days and slots
+
+    await this.prismaService.slot.deleteMany({
+      where: {
+        day: {
+          scheduleId: scheduleId,
+        },
+      },
+    });
+
+    await this.prismaService.day.deleteMany({
+      where: {
+        scheduleId: scheduleId,
+      },
+    });
+
+    return await this.prismaService.schedule.update({
       where: {
         id: scheduleId,
       },
-      data: { ...updateScheduleDTO },
+      data: {
+        title: scheduleDTO.title,
+        description: scheduleDTO.description,
+        userId: scheduleDTO.userId,
+        days: {
+          create: scheduleDTO.days.map((dayDTO) => ({
+            title: dayDTO.title,
+            slots: {
+              create: dayDTO.slots.map((slotDTO) => ({
+                startTime: slotDTO.startTime,
+                endTime: slotDTO.endTime,
+              })),
+            },
+          })),
+        },
+      },
     });
   }
 }

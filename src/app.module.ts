@@ -5,6 +5,9 @@ import { PrismaModule } from './prisma/prisma.module';
 import { ConfigModule } from '@nestjs/config';
 // import { ScheduleController } from './schedule/schedule.controller';
 import { ScheduleModule } from './schedule/schedule.module';
+import { DayModule } from './day/day.module';
+import { SlotModule } from './slot/slot.module';
+import { HistoryModule } from './history/history.module';
 
 @Module({
   imports: [
@@ -16,7 +19,12 @@ import { ScheduleModule } from './schedule/schedule.module';
       // envFilePath: `.env.${process.env.NODE_ENV}`,
     }),
     ScheduleModule,
+    DayModule,
+    SlotModule,
+    HistoryModule,
   ],
+  // controllers: [DayController, SlotController, HistoryController],
+  // providers: [DayService, SlotService, HistoryService],
   // controllers: [],
 })
 export class AppModule {}

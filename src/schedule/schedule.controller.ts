@@ -10,7 +10,7 @@ import {
 } from '@nestjs/common';
 import { MyJwtGuard } from '../auth/guard';
 import { ScheduleService } from './schedule.service';
-import { InsertScheduleDTO, UpdateScheduleDTO } from './dto';
+import { ScheduleDTO } from './dto';
 import { GetUser } from '../auth/decorator';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
@@ -27,23 +27,24 @@ export class ScheduleController {
   }
 
   @Get(':id')
-  getScheduleById(@Param('id') scheduleId: number) {
+  getScheduleById(@Param('id', ParseIntPipe) scheduleId: number) {
     return this.scheduleService.getScheduleById(scheduleId);
   }
 
   @Post()
   insertSchedule(
     @GetUser('id') userId: number,
-    @Body() insertScheduleDTO: InsertScheduleDTO,
+    @Body() scheduleDTO: ScheduleDTO,
   ) {
-    return this.scheduleService.insertSchedule(userId, insertScheduleDTO);
+    scheduleDTO.userId = userId;
+    return this.scheduleService.insertSchedule(scheduleDTO);
   }
 
-  @Patch()
+  @Patch(':id')
   updateSchedule(
     @Param('id', ParseIntPipe) scheduleId: number,
-    @Body() updateSchedule: UpdateScheduleDTO,
+    @Body() scheduleDTO: ScheduleDTO,
   ) {
-    return this.scheduleService.updateSchedule(scheduleId, updateSchedule);
+    return this.scheduleService.updateSchedule(scheduleId, scheduleDTO);
   }
 }

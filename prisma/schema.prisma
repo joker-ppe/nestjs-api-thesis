@@ -36,10 +36,11 @@ model User {
 model Schedule {
   id             Int     @id @default(autoincrement())
   title          String
-  description    String
+  description    String?
   numberOfViews  Int     @default(0)
   numberOfCopies Int     @default(0)
   isPublic       Boolean @default(true)
+  isActive       Boolean @default(true)
 
   createAt DateTime @default(now())
   updateAt DateTime @updatedAt
@@ -75,7 +76,7 @@ model Slot {
   endTime   String // hh:mm
 
   // relationship
-  status     Int
+  status     Int @default(1)
   slotStatus SlotStatus @relation(fields: [status], references: [id])
 
   // relationship
@@ -100,7 +101,7 @@ model History {
   startTime   DateTime @default(now())
   endTime     DateTime @updatedAt
   isCompleted Boolean  @default(false)
-  progress    Float
+  progress    Float @default(0)
 
   userId     Int // foreign key
   scheduleId Int // foreign key

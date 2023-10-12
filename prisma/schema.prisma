@@ -11,23 +11,25 @@ datasource db {
 }
 
 model User {
-  id             Int      @id @default(autoincrement())
-  userName       String   @unique
-  email          String?  @unique
-  hashedPassword String
-  firstName      String? //can be null
-  middleName     String? //can be null
-  lastName       String?
-  longitude      Float? //can be null
-  latitude       Float? //can be null
-  address        String? //can be null
-  city           String? //can be null
-  country        String? //can be null
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  id              Int      @id @default(autoincrement())
+  userName        String   @unique
+  email           String?  @unique
+  hashedPassword  String
+  firstName       String? //can be null
+  middleName      String? //can be null
+  lastName        String?
+  longitude       Float? //can be null
+  latitude        Float? //can be null
+  address         String? //can be null
+  city            String? //can be null
+  country         String? //can be null
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  scheduleIdInUse Int? //can be null
 
   //relationship
-  schedeles Schedule[]
+  schedules Schedule[]
   histores  History[]
 
   @@map("users") //users id "table's name" in Postgres SQL
@@ -76,7 +78,7 @@ model Slot {
   endTime   String // hh:mm
 
   // relationship
-  status     Int @default(1)
+  status Int @default(1)
   // slotStatus SlotStatus @relation(fields: [status], references: [id])
 
   // relationship
@@ -101,7 +103,7 @@ model History {
   startTime   DateTime @default(now())
   endTime     DateTime @updatedAt
   isCompleted Boolean  @default(false)
-  progress    Float @default(0)
+  progress    Float    @default(0)
 
   userId     Int // foreign key
   scheduleId Int // foreign key

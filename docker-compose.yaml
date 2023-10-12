@@ -3,6 +3,8 @@ version: '3.9'
 services:
   mhz-database:
     image: postgres:16.0
+    volumes:
+      - my_postgres_data:/var/lib/postgresql/data
     container_name: mhz-database
     ports:
       - 5432:5432 #{port in host(myPC)} : {port in Container}
@@ -24,3 +26,5 @@ services:
       - nestjs-network
 networks:
   nestjs-network:
+volumes:
+  my_postgres_data:

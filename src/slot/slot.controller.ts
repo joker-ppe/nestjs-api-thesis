@@ -22,7 +22,9 @@ export class SlotController {
   updateSlotStatus(
     @GetUser('id') userId: number,
     @Param('id', ParseIntPipe) slotId: number,
-    @Query('statusCode', ParseIntPipe) statusCode: number,
+
+    @Query('statusCode', ParseIntPipe)
+    statusCode: number,
   ) {
     return this.slotService.updateSlotStatus(userId, slotId, statusCode);
   }

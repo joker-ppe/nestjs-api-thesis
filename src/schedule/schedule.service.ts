@@ -1,3 +1,4 @@
+import { HistoryService } from './../history/history.service';
 import {
   ForbiddenException,
   Injectable,
@@ -8,7 +9,10 @@ import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class ScheduleService {
-  constructor(private prismaService: PrismaService) {}
+  constructor(
+    private prismaService: PrismaService,
+    private historyService: HistoryService,
+  ) {}
 
   async getSchedules(userId: number) {
     const schedules = await this.prismaService.schedule.findMany({
@@ -148,6 +152,16 @@ export class ScheduleService {
       throw new ForbiddenException('Schedule is not exist.');
     }
 
+    const userInUse = await this.prismaService.user.findMany({
+      where: {
+        scheduleIdInUse: scheduleId,
+      },
+    });
+
+    if (userInUse.length != 0) {
+      throw new ForbiddenException('Schedule is in using.');
+    }
+
     return await this.prismaService.schedule.update({
       where: {
         id: scheduleId,
@@ -179,7 +193,7 @@ export class ScheduleService {
   }
 
   async getScheduleInUse(userId: number) {
-    const user = await this.prismaService.user.findUniqueOrThrow({
+    const user = await this.prismaService.user.findUnique({
       where: {
         id: userId,
       },
@@ -198,20 +212,18 @@ export class ScheduleService {
         );
       }
 
-      const scheduleInUse = await this.prismaService.schedule.findUniqueOrThrow(
-        {
-          where: {
-            id: scheduleIdInUse,
-          },
-          include: {
-            days: {
-              include: {
-                slots: true,
-              },
+      const scheduleInUse = await this.prismaService.schedule.findUnique({
+        where: {
+          id: scheduleIdInUse,
+        },
+        include: {
+          days: {
+            include: {
+              slots: true,
             },
           },
         },
-      );
+      });
 
       return scheduleInUse;
     } else {
@@ -227,6 +239,56 @@ export class ScheduleService {
     );
 
     if (isScheduleIdInList) {
+      const user = await this.prismaService.user.findUnique({
+        where: {
+          id: userId,
+        },
+        select: {
+          userName: true,
+          scheduleIdInUse: true,
+        },
+      });
+
+      if (user.scheduleIdInUse) {
+        if (user.scheduleIdInUse != scheduleId) {
+          const totalSlotsCount = await this.prismaService.slot.count({
+            where: {
+              day: {
+                scheduleId: user.scheduleIdInUse,
+              },
+            },
+          });
+
+          const statusTwoSlotsCount = await this.prismaService.slot.count({
+            where: {
+              day: {
+                scheduleId: user.scheduleIdInUse,
+              },
+              status: 2,
+            },
+          });
+
+          if (totalSlotsCount === 0) {
+            return 0; // To avoid division by zero
+          }
+
+          const percentage = (statusTwoSlotsCount * 100) / totalSlotsCount;
+
+          // add history
+          await this.historyService.markHistoryAsCompleted(
+            userId,
+            user.scheduleIdInUse,
+            percentage,
+          );
+
+          // add history
+          await this.historyService.insertNewHistory(userId, scheduleId);
+        }
+      } else {
+        // add history
+        await this.historyService.insertNewHistory(userId, scheduleId);
+      }
+
       return await this.prismaService.user.update({
         where: {
           id: userId,
@@ -245,6 +307,38 @@ export class ScheduleService {
   }
 
   async removeScheduleInUse(userId: number) {
+    const scheduleInUse = await this.getScheduleInUse(userId);
+
+    const totalSlotsCount = await this.prismaService.slot.count({
+      where: {
+        day: {
+          scheduleId: scheduleInUse.id,
+        },
+      },
+    });
+
+    const statusTwoSlotsCount = await this.prismaService.slot.count({
+      where: {
+        day: {
+          scheduleId: scheduleInUse.id,
+        },
+        status: 2,
+      },
+    });
+
+    if (totalSlotsCount === 0) {
+      return 0; // To avoid division by zero
+    }
+
+    const percentage = (statusTwoSlotsCount * 100) / totalSlotsCount;
+
+    // add history
+    await this.historyService.markHistoryAsCompleted(
+      userId,
+      scheduleInUse.id,
+      percentage,
+    );
+
     return await this.prismaService.user.update({
       where: {
         id: userId,

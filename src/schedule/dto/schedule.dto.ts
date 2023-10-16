@@ -58,3 +58,12 @@ export class ScheduleDTO {
   @ValidateNested()
   days: DayDTO[];
 }
+
+enum SlotStatus {
+  NotYet = 1,
+  Done = 2,
+  Cancel = 3,
+  // Add more status codes as needed
+}
+
+export { SlotStatus };

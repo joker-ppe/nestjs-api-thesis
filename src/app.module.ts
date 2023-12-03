@@ -8,6 +8,7 @@ import { ScheduleModule } from './schedule/schedule.module';
 import { DayModule } from './day/day.module';
 import { SlotModule } from './slot/slot.module';
 import { HistoryModule } from './history/history.module';
+import { DeviceModule } from './device/device.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { HistoryModule } from './history/history.module';
     DayModule,
     SlotModule,
     HistoryModule,
+    DeviceModule,
   ],
   // controllers: [DayController, SlotController, HistoryController],
   // providers: [DayService, SlotService, HistoryService],

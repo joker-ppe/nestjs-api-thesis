@@ -6,6 +6,31 @@ import {
   ValidateNested,
 } from 'class-validator';
 
+export class DeviceDTO {
+  id: number;
+
+  @IsString()
+  @IsOptional()
+  @ApiProperty()
+  name: string;
+  @IsString()
+  @IsOptional()
+  @ApiProperty()
+  description: string;
+  @IsString()
+  @IsOptional()
+  @ApiProperty()
+  macAddress: string;
+  @IsString()
+  @IsOptional()
+  @ApiProperty()
+  serialNumber: string;
+  @IsString()
+  @IsOptional()
+  @ApiProperty()
+  systemInfo: string;
+}
+
 export class SlotDTO {
   id: number;
 

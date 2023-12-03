@@ -11,20 +11,20 @@ datasource db {
 }
 
 model User {
-  id              Int      @id @default(autoincrement())
-  userName        String   @unique
-  email           String?  @unique
-  hashedPassword  String
-  firstName       String? //can be null
-  middleName      String? //can be null
-  lastName        String?
-  longitude       Float? //can be null
-  latitude        Float? //can be null
-  address         String? //can be null
-  city            String? //can be null
-  country         String? //can be null
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  id             Int      @id @default(autoincrement())
+  userName       String   @unique
+  email          String?  @unique
+  hashedPassword String
+  firstName      String? //can be null
+  middleName     String? //can be null
+  lastName       String?
+  longitude      Float? //can be null
+  latitude       Float? //can be null
+  address        String? //can be null
+  city           String? //can be null
+  country        String? //can be null
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 
   scheduleIdInUse Int? //can be null
 
@@ -112,4 +112,28 @@ model History {
   schedule Schedule @relation(fields: [scheduleId], references: [id])
 
   @@map("histories")
+}
+
+model Admin {
+  id        Int      @id @default(autoincrement())
+  userName  String   @unique
+  password  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("admins")
+}
+
+model Device {
+  id           Int      @id @default(autoincrement())
+  name         String   @default("New Device")
+  description  String?
+  macAddress   String?
+  serialNumber String?
+  systemInfo   String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@unique([macAddress, serialNumber])
+  @@map("devices")
 }

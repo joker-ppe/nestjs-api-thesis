@@ -3,19 +3,21 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { DeviceDTO } from 'src/schedule/dto';
 
 @Injectable()
 export class DeviceService {
-  constructor(
-    private prismaService: PrismaService,
-    private configService: ConfigService,
-  ) {}
+  constructor(private prismaService: PrismaService) {}
 
   async getDeviceById(apiKey: string, deviceId: number) {
-    if (apiKey === this.configService.get('API_KEY')) {
+    const apiKeyOnSystem = await this.prismaService.key.findFirst({
+      where: {
+        name: 'api_key_device',
+      },
+    });
+
+    if (apiKey === apiKeyOnSystem.key) {
       const device = await this.prismaService.device.findUnique({
         where: {
           id: deviceId,
@@ -33,7 +35,13 @@ export class DeviceService {
   }
 
   async insertDevice(apiKey: string, deviceDTO: DeviceDTO) {
-    if (apiKey === this.configService.get('API_KEY')) {
+    const apiKeyOnSystem = await this.prismaService.key.findFirst({
+      where: {
+        name: 'api_key_device',
+      },
+    });
+
+    if (apiKey === apiKeyOnSystem.key) {
       const device = await this.prismaService.device.create({
         data: {
           name: deviceDTO.name,
@@ -51,7 +59,13 @@ export class DeviceService {
   }
 
   async updateDevice(apiKey: string, deviceId: number, deviceDTO: DeviceDTO) {
-    if (apiKey === this.configService.get('API_KEY')) {
+    const apiKeyOnSystem = await this.prismaService.key.findFirst({
+      where: {
+        name: 'api_key_device',
+      },
+    });
+
+    if (apiKey === apiKeyOnSystem.key) {
       const device = await this.prismaService.device.findUnique({
         where: {
           id: deviceId,

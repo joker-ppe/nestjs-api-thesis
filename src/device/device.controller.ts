@@ -25,6 +25,19 @@ export class DeviceController {
     return this.deviceService.getDeviceById(apiKey, deviceId);
   }
 
+  @Get()
+  getDeviceByMacAddressAndSerialNumber(
+    @Query('api_key') apiKey: string,
+    @Query('macAddress') macAddress: string,
+    @Query('serialNumber') serialNumber: string,
+  ) {
+    return this.deviceService.getDeviceByMacAddressAndSerialNumber(
+      apiKey,
+      macAddress,
+      serialNumber,
+    );
+  }
+
   @Post()
   insertDevice(@Query('api_key') apiKey: string, @Body() deviceDTO: DeviceDTO) {
     return this.deviceService.insertDevice(apiKey, deviceDTO);

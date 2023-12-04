@@ -34,6 +34,35 @@ export class DeviceService {
     }
   }
 
+  async getDeviceByMacAddressAndSerialNumber(
+    apiKey: string,
+    macAddress: string,
+    serialNumber: string,
+  ) {
+    const apiKeyOnSystem = await this.prismaService.key.findFirst({
+      where: {
+        name: 'api_key_device',
+      },
+    });
+
+    if (apiKey === apiKeyOnSystem.key) {
+      const device = await this.prismaService.device.findFirst({
+        where: {
+          macAddress: macAddress,
+          serialNumber: serialNumber,
+        },
+      });
+
+      if (!device) {
+        throw new NotFoundException('Device is not exist.');
+      }
+
+      return device;
+    } else {
+      throw new ForbiddenException('Wrong API key.');
+    }
+  }
+
   async insertDevice(apiKey: string, deviceDTO: DeviceDTO) {
     const apiKeyOnSystem = await this.prismaService.key.findFirst({
       where: {

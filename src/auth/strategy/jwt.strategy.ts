@@ -1,19 +1,24 @@
-import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
-  constructor(
-    configService: ConfigService,
-    public prismaService: PrismaService,
-  ) {
+  private jwtSecret: string;
+
+  constructor(public prismaService: PrismaService) {
     super({
       // token string is added to every request(except login/register)
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-      secretOrKey: configService.get('JWT_SECRET'),
+      secretOrKeyProvider: async (request, rawJwtToken, done) => {
+        if (!this.jwtSecret) {
+          // Fetch secret from database
+          const secret = await this.getSecretFromDatabase();
+          this.jwtSecret = secret;
+        }
+        done(null, this.jwtSecret);
+      },
     });
   }
   async validate(payload: { sub: number; email: string }) {
@@ -22,7 +27,17 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
         id: payload.sub,
       },
     });
+    if (!user) {
+      throw new UnauthorizedException();
+    }
     delete user.hashedPassword;
     return user;
+  }
+
+  private async getSecretFromDatabase() {
+    const config = await this.prismaService.key.findFirst({
+      where: { name: 'JWT_SECRET' },
+    });
+    return config.key;
   }
 }

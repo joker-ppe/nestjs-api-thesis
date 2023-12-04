@@ -90,11 +90,18 @@ export class AuthService {
     };
     const jwtString = await this.jwtService.signAsync(payload, {
       expiresIn: 24 * 3600, // 24 hours
-      secret: this.configService.get('JWT_SECRET'),
+      secret: await this.getSecretFromDatabase(),
     });
 
     return {
       accessToken: jwtString,
     };
+  }
+
+  private async getSecretFromDatabase() {
+    const config = await this.prismaService.key.findFirst({
+      where: { name: 'JWT_SECRET' },
+    });
+    return config.key;
   }
 }

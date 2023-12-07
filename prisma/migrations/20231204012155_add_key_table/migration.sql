@@ -8,3 +8,8 @@ CREATE TABLE "keys" (
 
     CONSTRAINT "keys_pkey" PRIMARY KEY ("id")
 );
+
+
+INSERT INTO "keys" ("name","key","updatedAt") VALUES ('api_key_device', 'InVMJN87fOOSvcI15qYnTRDj2YYe8hxH',CURRENT_TIMESTAMP);
+
+INSERT INTO "keys" ("name","key","updatedAt") VALUES ('JWT_SECRET', 'Pass in 2023. Joker key @#@$#@$&^*&^',CURRENT_TIMESTAMP);

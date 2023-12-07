@@ -76,7 +76,7 @@ export class AuthService {
 
       return await this.signJwtToken(user.id, user.userName);
     } catch (error) {
-      throw new ForbiddenException(error.code);
+      throw new ForbiddenException(error.message);
     }
   }
 

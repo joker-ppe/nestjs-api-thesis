@@ -12,6 +12,11 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: dbKey6868Mhz
       POSTGRES_DB: thesisdb
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     networks:
       - nestjs-network
   mhz-api:
@@ -20,11 +25,32 @@ services:
     container_name: mhz-api
     ports:
       - 3003:3003
-    # depends_on:
-    #   - mhz-database
+    depends_on:
+      mhz-database:
+        condition: service_healthy
     networks:
       - nestjs-network
+  mhz-rabbitmq:
+    image: rabbitmq:3.12-management
+    volumes:
+        - my_postgres_data:/var/lib/rabbitmq/
+        - my_postgres_data:/var/log/rabbitmq
+    container_name: mhz-rabbitmq
+    ports:
+      - 5672:5672
+      - 15672:15672
+    environment:
+      - RABBITMQ_DEFAULT_USER=joker
+      - RABBITMQ_DEFAULT_PASS=Joker@123$
+    networks:
+      - nestjs-network
+    healthcheck:
+      test: ["CMD-SHELL", "rabbitmqctl status"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 networks:
   nestjs-network:
+    driver: bridge
 volumes:
   my_postgres_data:

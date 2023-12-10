@@ -25,6 +25,7 @@ model User {
   country        String? //can be null
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
+  photoUrl       String? //can be null
 
   scheduleIdInUse Int? //can be null
 

@@ -62,4 +62,9 @@ export class RegisterUserDTO {
   @IsOptional()
   @ApiProperty()
   country: string;
+
+  @IsString()
+  @IsOptional()
+  @ApiProperty()
+  photoUrl: string;
 }

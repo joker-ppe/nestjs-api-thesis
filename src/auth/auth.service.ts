@@ -32,6 +32,7 @@ export class AuthService {
           address: registerUserDTO.address,
           city: registerUserDTO.city,
           country: registerUserDTO.country,
+          photoUrl: registerUserDTO.photoUrl,
         },
         select: {
           id: true,

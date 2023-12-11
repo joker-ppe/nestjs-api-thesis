@@ -75,16 +75,22 @@ export class AuthService {
       delete user.hashedPassword; //remove a field in the object
       //it doesn't affect to the database
 
-      return await this.signJwtToken(user.id, user.userName);
+      const accessToken = await this.signJwtToken(user.id, user.userName);
+
+      return {
+        accessToken: accessToken,
+        userName: user.userName,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email,
+        photoUrl: user.photoUrl,
+      };
     } catch (error) {
       throw new ForbiddenException(error.message);
     }
   }
 
-  async signJwtToken(
-    userId: number,
-    userName: string,
-  ): Promise<{ accessToken: string }> {
+  async signJwtToken(userId: number, userName: string): Promise<string> {
     const payload = {
       sub: userId,
       userName,
@@ -94,9 +100,7 @@ export class AuthService {
       secret: await this.getSecretFromDatabase(),
     });
 
-    return {
-      accessToken: jwtString,
-    };
+    return jwtString;
   }
 
   private async getSecretFromDatabase() {

@@ -1,6 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
+  IsBoolean,
   IsNotEmpty,
+  IsNumber,
   IsOptional,
   IsString,
   ValidateNested,
@@ -64,10 +66,60 @@ export class ScheduleDTO {
   @ApiProperty()
   title: string;
 
+  @IsBoolean()
+  @IsOptional()
+  @ApiProperty()
+  isPublic: boolean;
+
+  @IsString()
+  @IsOptional()
+  @ApiProperty()
+  plantName: string;
+
   @IsString()
   @IsOptional()
   @ApiProperty()
   description: string;
+
+  @IsString()
+  @IsOptional()
+  @ApiProperty()
+  imageData: string;
+
+  @IsNumber()
+  @IsOptional()
+  @ApiProperty()
+  moistureThreshold: number = -1;
+
+  @IsNumber()
+  @IsOptional()
+  @ApiProperty()
+  temperatureThreshold: number = -1;
+
+  @IsNumber()
+  @IsOptional()
+  @ApiProperty()
+  ecThreshold: number = -1;
+
+  @IsNumber()
+  @IsOptional()
+  @ApiProperty()
+  pHThreshold: number = -1;
+
+  @IsNumber()
+  @IsOptional()
+  @ApiProperty()
+  nThreshold: number = -1;
+
+  @IsNumber()
+  @IsOptional()
+  @ApiProperty()
+  pThreshold: number = -1;
+
+  @IsNumber()
+  @IsOptional()
+  @ApiProperty()
+  kThreshold: number = -1;
 
   // @IsNumber()
   // @IsNotEmpty()

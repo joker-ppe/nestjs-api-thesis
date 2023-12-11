@@ -39,11 +39,21 @@ model User {
 model Schedule {
   id             Int     @id @default(autoincrement())
   title          String
+  plantName      String?
   description    String?
   numberOfViews  Int     @default(0)
   numberOfCopies Int     @default(0)
   isPublic       Boolean @default(true)
   isActive       Boolean @default(true)
+  imageData      String?
+
+  moistureThreshold    Float @default(-1)
+  temperatureThreshold Float @default(-1)
+  ecThreshold          Float @default(-1)
+  pHThreshold          Float @default(-1)
+  nThreshold           Float @default(-1)
+  pThreshold           Float @default(-1)
+  kThreshold           Float @default(-1)
 
   createAt DateTime @default(now())
   updateAt DateTime @updatedAt

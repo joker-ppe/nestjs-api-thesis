@@ -21,6 +21,9 @@ export class ScheduleService {
         // get schedules have status active only
         isActive: true,
       },
+      orderBy: {
+        updateAt: 'desc', // Order by updateAt in descending order
+      },
       include: {
         days: {
           include: {
@@ -59,6 +62,16 @@ export class ScheduleService {
       data: {
         title: scheduleDTO.title,
         description: scheduleDTO.description,
+        plantName: scheduleDTO.plantName,
+        isPublic: scheduleDTO.isPublic,
+        imageData: scheduleDTO.imageData,
+        moistureThreshold: scheduleDTO.moistureThreshold,
+        temperatureThreshold: scheduleDTO.temperatureThreshold,
+        ecThreshold: scheduleDTO.ecThreshold,
+        pHThreshold: scheduleDTO.pHThreshold,
+        nThreshold: scheduleDTO.nThreshold,
+        pThreshold: scheduleDTO.pThreshold,
+        kThreshold: scheduleDTO.kThreshold,
         userId: scheduleDTO.userId,
         days: {
           create: scheduleDTO.days.map((dayDTO) => ({
@@ -125,6 +138,16 @@ export class ScheduleService {
       data: {
         title: scheduleDTO.title,
         description: scheduleDTO.description,
+        plantName: scheduleDTO.plantName,
+        isPublic: scheduleDTO.isPublic,
+        imageData: scheduleDTO.imageData,
+        moistureThreshold: scheduleDTO.moistureThreshold,
+        temperatureThreshold: scheduleDTO.temperatureThreshold,
+        ecThreshold: scheduleDTO.ecThreshold,
+        pHThreshold: scheduleDTO.pHThreshold,
+        nThreshold: scheduleDTO.nThreshold,
+        pThreshold: scheduleDTO.pThreshold,
+        kThreshold: scheduleDTO.kThreshold,
         userId: scheduleDTO.userId,
         days: {
           create: scheduleDTO.days.map((dayDTO) => ({
@@ -179,6 +202,7 @@ export class ScheduleService {
           contains: query,
         },
         isActive: true,
+        isPublic: true,
       },
       include: {
         days: {

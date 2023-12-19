@@ -46,6 +46,7 @@ model Schedule {
   isPublic       Boolean @default(true)
   isActive       Boolean @default(true)
   imageData      String?
+  numberOfDates  Int     @default(0)
 
   moistureThreshold    Float @default(-1)
   temperatureThreshold Float @default(-1)
@@ -63,50 +64,62 @@ model Schedule {
   user   User @relation(fields: [userId], references: [id])
 
   // relationship with day
-  days     Day[]
+  slots    Slot[]
   histores History[]
 
   @@map("schedules")
 }
 
-model Day {
-  id    Int     @id @default(autoincrement())
-  title String?
+// model Day {
+//   id    Int     @id @default(autoincrement())
+//   title String?
 
-  // relationship
-  scheduleId Int //foreign key
-  schedule   Schedule @relation(fields: [scheduleId], references: [id])
+//   // relationship
+//   scheduleId Int //foreign key
+//   schedule   Schedule @relation(fields: [scheduleId], references: [id])
 
-  // relationship with Slot
-  slots Slot[]
+//   // relationship with Slot
+//   slots Slot[]
 
-  @@map("days")
-}
+//   @@map("days")
+// }
 
 model Slot {
-  id        Int    @id @default(autoincrement())
-  startTime String // hh:mm
-  endTime   String // hh:mm
-
+  id         Int      @id @default(autoincrement())
+  startTime  String // hh:mm
+  endTime    String // hh:mm
   // relationship
-  status Int @default(1)
-  // slotStatus SlotStatus @relation(fields: [status], references: [id])
+  scheduleId Int
+  schedule   Schedule @relation(fields: [scheduleId], references: [id])
 
-  // relationship
-  dayId Int
-  day   Day @relation(fields: [dayId], references: [id])
+  slotStatuses SlotStatus[]
 
   @@map("slots")
 }
 
 model SlotStatus {
-  id          Int     @id @default(autoincrement())
-  description String?
+  id                  Int        @id @default(autoincrement())
+  
+  date                DateTime   @default(now())
+  dateIndexInSchedule Int        @default(1)
+  status              StatusSlot @default(NOT_YET)
+
+  updateAt            DateTime   @updatedAt
 
   // relationship
-  // slots Slot[]
+  // relationship
+  slotId Int
+  slot   Slot @relation(fields: [slotId], references: [id])
 
   @@map("slotStatuses")
+}
+
+enum StatusSlot {
+  NOT_YET
+  DONE
+  ERROR
+  CANCEL
+  UNKNOWN
 }
 
 model History {
@@ -125,15 +138,15 @@ model History {
   @@map("histories")
 }
 
-model Admin {
-  id        Int      @id @default(autoincrement())
-  userName  String   @unique
-  password  String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+// model Admin {
+//   id        Int      @id @default(autoincrement())
+//   userName  String   @unique
+//   password  String
+//   createdAt DateTime @default(now())
+//   updatedAt DateTime @updatedAt
 
-  @@map("admins")
-}
+//   @@map("admins")
+// }
 
 model Device {
   id           Int      @id @default(autoincrement())

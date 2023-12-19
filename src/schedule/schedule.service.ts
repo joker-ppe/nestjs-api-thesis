@@ -4,7 +4,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { ScheduleDTO } from './dto';
+import { ScheduleDTO, SlotStatus } from './dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
@@ -25,11 +25,7 @@ export class ScheduleService {
         updateAt: 'desc', // Order by updateAt in descending order
       },
       include: {
-        days: {
-          include: {
-            slots: true,
-          },
-        },
+        slots: true,
       },
     });
     return schedules;
@@ -42,11 +38,7 @@ export class ScheduleService {
         userId: userId,
       },
       include: {
-        days: {
-          include: {
-            slots: true,
-          },
-        },
+        slots: true,
       },
     });
 
@@ -65,6 +57,7 @@ export class ScheduleService {
         plantName: scheduleDTO.plantName,
         isPublic: scheduleDTO.isPublic,
         imageData: scheduleDTO.imageData,
+        numberOfDates: scheduleDTO.numberOfDates,
         moistureThreshold: scheduleDTO.moistureThreshold,
         temperatureThreshold: scheduleDTO.temperatureThreshold,
         ecThreshold: scheduleDTO.ecThreshold,
@@ -73,15 +66,10 @@ export class ScheduleService {
         pThreshold: scheduleDTO.pThreshold,
         kThreshold: scheduleDTO.kThreshold,
         userId: scheduleDTO.userId,
-        days: {
-          create: scheduleDTO.days.map((dayDTO) => ({
-            title: dayDTO.title,
-            slots: {
-              create: dayDTO.slots.map((slotDTO) => ({
-                startTime: slotDTO.startTime,
-                endTime: slotDTO.endTime,
-              })),
-            },
+        slots: {
+          create: scheduleDTO.slots.map((slotDTO) => ({
+            startTime: slotDTO.startTime,
+            endTime: slotDTO.endTime,
           })),
         },
       },
@@ -119,14 +107,6 @@ export class ScheduleService {
 
     await this.prismaService.slot.deleteMany({
       where: {
-        day: {
-          scheduleId: scheduleId,
-        },
-      },
-    });
-
-    await this.prismaService.day.deleteMany({
-      where: {
         scheduleId: scheduleId,
       },
     });
@@ -141,6 +121,7 @@ export class ScheduleService {
         plantName: scheduleDTO.plantName,
         isPublic: scheduleDTO.isPublic,
         imageData: scheduleDTO.imageData,
+        numberOfDates: scheduleDTO.numberOfDates,
         moistureThreshold: scheduleDTO.moistureThreshold,
         temperatureThreshold: scheduleDTO.temperatureThreshold,
         ecThreshold: scheduleDTO.ecThreshold,
@@ -149,15 +130,10 @@ export class ScheduleService {
         pThreshold: scheduleDTO.pThreshold,
         kThreshold: scheduleDTO.kThreshold,
         userId: scheduleDTO.userId,
-        days: {
-          create: scheduleDTO.days.map((dayDTO) => ({
-            title: dayDTO.title,
-            slots: {
-              create: dayDTO.slots.map((slotDTO) => ({
-                startTime: slotDTO.startTime,
-                endTime: slotDTO.endTime,
-              })),
-            },
+        slots: {
+          create: scheduleDTO.slots.map((slotDTO) => ({
+            startTime: slotDTO.startTime,
+            endTime: slotDTO.endTime,
           })),
         },
       },
@@ -205,11 +181,7 @@ export class ScheduleService {
         isPublic: true,
       },
       include: {
-        days: {
-          include: {
-            slots: true,
-          },
-        },
+        slots: true,
       },
     });
 
@@ -241,11 +213,7 @@ export class ScheduleService {
           id: scheduleIdInUse,
         },
         include: {
-          days: {
-            include: {
-              slots: true,
-            },
-          },
+          slots: true,
         },
       });
 
@@ -277,26 +245,25 @@ export class ScheduleService {
         if (user.scheduleIdInUse != scheduleId) {
           const totalSlotsCount = await this.prismaService.slot.count({
             where: {
-              day: {
-                scheduleId: user.scheduleIdInUse,
-              },
+              scheduleId: user.scheduleIdInUse,
             },
           });
 
-          const statusTwoSlotsCount = await this.prismaService.slot.count({
-            where: {
-              day: {
-                scheduleId: user.scheduleIdInUse,
+          const statusDoneSlotsCount =
+            await this.prismaService.slotStatus.count({
+              where: {
+                slot: {
+                  scheduleId: user.scheduleIdInUse,
+                },
+                status: SlotStatus.Done,
               },
-              status: 2,
-            },
-          });
+            });
 
           if (totalSlotsCount === 0) {
             return 0; // To avoid division by zero
           }
 
-          const percentage = (statusTwoSlotsCount * 100) / totalSlotsCount;
+          const percentage = (statusDoneSlotsCount * 100) / totalSlotsCount;
 
           // add history
           await this.historyService.markHistoryAsCompleted(
@@ -335,18 +302,16 @@ export class ScheduleService {
 
     const totalSlotsCount = await this.prismaService.slot.count({
       where: {
-        day: {
-          scheduleId: scheduleInUse.id,
-        },
+        scheduleId: scheduleInUse.id,
       },
     });
 
-    const statusTwoSlotsCount = await this.prismaService.slot.count({
+    const statusDoneSlotsCount = await this.prismaService.slotStatus.count({
       where: {
-        day: {
+        slot: {
           scheduleId: scheduleInUse.id,
         },
-        status: 2,
+        status: SlotStatus.Done,
       },
     });
 
@@ -354,7 +319,7 @@ export class ScheduleService {
       return 0; // To avoid division by zero
     }
 
-    const percentage = (statusTwoSlotsCount * 100) / totalSlotsCount;
+    const percentage = (statusDoneSlotsCount * 100) / totalSlotsCount;
 
     // add history
     await this.historyService.markHistoryAsCompleted(

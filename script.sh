@@ -10,6 +10,8 @@ sudo ufw allow 5432
 
 sudo ufw allow 3003
 
+sudo ufw allow ssh
+
 # install Docker
 sudo apt-get update
 

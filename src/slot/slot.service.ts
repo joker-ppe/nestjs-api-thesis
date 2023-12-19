@@ -1,5 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { SlotStatus } from 'src/schedule/dto';
 
 @Injectable()
 export class SlotService {
@@ -24,11 +25,7 @@ export class SlotService {
       include: {
         schedules: {
           include: {
-            days: {
-              include: {
-                slots: true, // Include the slots in the days
-              },
-            },
+            slots: true, // Include the slots in the days
           },
         },
       },
@@ -38,16 +35,16 @@ export class SlotService {
 
     // Now, you can check if slotId belongs to any of the user's schedules
     const slotExists = user.schedules.some((schedule) =>
-      schedule.days.some((day) => day.slots.some((slot) => slot.id === slotId)),
+      schedule.slots.some((slot) => slot.id === slotId),
     );
 
     if (slotExists) {
-      return this.prismaService.slot.update({
+      return this.prismaService.slotStatus.update({
         where: {
           id: slotId,
         },
         data: {
-          status: statusCode,
+          status: SlotStatus.Done,
         },
       });
     } else {

@@ -1,12 +1,22 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
   IsBoolean,
+  IsEnum,
   IsNotEmpty,
   IsNumber,
   IsOptional,
   IsString,
   ValidateNested,
 } from 'class-validator';
+
+export enum SlotStatus {
+  NotYet = 'NOT_YET',
+  Done = 'DONE',
+  Cancel = 'CANCEL',
+  Error = 'ERROR',
+  Unknown = 'UNKNOWN',
+  // Add more status codes as needed
+}
 
 export class DeviceDTO {
   id: number;
@@ -45,19 +55,18 @@ export class SlotDTO {
   @IsNotEmpty()
   @ApiProperty()
   endTime: string;
+
+  scheduleId: number;
 }
 
-export class DayDTO {
+export class SlotStatusDTO {
   id: number;
 
-  @IsString()
-  @IsOptional()
-  @ApiProperty()
-  title: string;
+  slotId: number;
 
-  @ApiProperty({ type: [SlotDTO] })
-  @ValidateNested()
-  slots: SlotDTO[];
+  @IsEnum(SlotStatus)
+  @ApiProperty()
+  status: string;
 }
 
 export class ScheduleDTO {
@@ -85,6 +94,11 @@ export class ScheduleDTO {
   @IsOptional()
   @ApiProperty()
   imageData: string;
+
+  @IsNumber()
+  @IsOptional()
+  @ApiProperty()
+  numberOfDates: number = 0;
 
   @IsNumber()
   @IsOptional()
@@ -131,16 +145,7 @@ export class ScheduleDTO {
   // @ApiProperty()
   userId: number;
 
-  @ApiProperty({ type: [DayDTO] })
+  @ApiProperty({ type: [SlotDTO] })
   @ValidateNested()
-  days: DayDTO[];
+  slots: SlotDTO[];
 }
-
-enum SlotStatus {
-  NotYet = 1,
-  Done = 2,
-  Cancel = 3,
-  // Add more status codes as needed
-}
-
-export { SlotStatus };

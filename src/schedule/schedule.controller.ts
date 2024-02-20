@@ -65,6 +65,12 @@ export class ScheduleController {
     return this.scheduleService.searchSchedule(query.trim());
   }
 
+  @Get('public')
+  getPublicSchedule() {
+    // console.log(query);
+    return this.scheduleService.getPublicSchedule();
+  }
+
   @Get('inUse')
   getScheduleInUse(@GetUser('id') userId: number) {
     // console.log(query);

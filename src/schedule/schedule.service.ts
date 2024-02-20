@@ -1,9 +1,5 @@
 import { HistoryService } from './../history/history.service';
-import {
-  ForbiddenException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { ScheduleDTO, SlotStatus } from './dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 
@@ -22,7 +18,7 @@ export class ScheduleService {
         isActive: true,
       },
       orderBy: {
-        updateAt: 'desc', // Order by updateAt in descending order
+        updateContentAt: 'desc', // Order by updateAt in descending order
       },
       include: {
         slots: true,
@@ -58,6 +54,8 @@ export class ScheduleService {
         isPublic: scheduleDTO.isPublic,
         imageData: scheduleDTO.imageData,
         numberOfDates: scheduleDTO.numberOfDates,
+        longitude: scheduleDTO.longitude,
+        latitude: scheduleDTO.latitude,
         moistureThreshold: scheduleDTO.moistureThreshold,
         temperatureThreshold: scheduleDTO.temperatureThreshold,
         ecThreshold: scheduleDTO.ecThreshold,
@@ -66,6 +64,7 @@ export class ScheduleService {
         pThreshold: scheduleDTO.pThreshold,
         kThreshold: scheduleDTO.kThreshold,
         userId: scheduleDTO.userId,
+        updateContentAt: new Date(),
         slots: {
           create: scheduleDTO.slots.map((slotDTO) => ({
             startTime: slotDTO.startTime,
@@ -90,7 +89,7 @@ export class ScheduleService {
     });
 
     if (!schedule) {
-      throw new ForbiddenException('Schedule is not exist.');
+      throw new NotFoundException('Schedule is not exist.');
     }
 
     const schedules = await this.getSchedules(userId);
@@ -122,6 +121,8 @@ export class ScheduleService {
         isPublic: scheduleDTO.isPublic,
         imageData: scheduleDTO.imageData,
         numberOfDates: scheduleDTO.numberOfDates,
+        longitude: scheduleDTO.longitude,
+        latitude: scheduleDTO.latitude,
         moistureThreshold: scheduleDTO.moistureThreshold,
         temperatureThreshold: scheduleDTO.temperatureThreshold,
         ecThreshold: scheduleDTO.ecThreshold,
@@ -129,6 +130,7 @@ export class ScheduleService {
         nThreshold: scheduleDTO.nThreshold,
         pThreshold: scheduleDTO.pThreshold,
         kThreshold: scheduleDTO.kThreshold,
+        updateContentAt: new Date(),
         userId: scheduleDTO.userId,
         slots: {
           create: scheduleDTO.slots.map((slotDTO) => ({
@@ -148,7 +150,7 @@ export class ScheduleService {
     });
 
     if (!schedule) {
-      throw new ForbiddenException('Schedule is not exist.');
+      throw new NotFoundException('Schedule is not exist.');
     }
 
     const userInUse = await this.prismaService.user.findMany({
@@ -158,7 +160,7 @@ export class ScheduleService {
     });
 
     if (userInUse.length != 0) {
-      throw new ForbiddenException('Schedule is in using.');
+      throw new NotFoundException('Schedule is in using.');
     }
 
     return await this.prismaService.schedule.update({
@@ -180,8 +182,85 @@ export class ScheduleService {
         isActive: true,
         isPublic: true,
       },
-      include: {
+      orderBy: {
+        updateAt: 'desc', // Order by updateAt in descending order
+      },
+      select: {
+        id: true,
+        title: true,
+        description: true,
+        numberOfViews: true,
+        numberOfCopies: true,
+        imageData: true,
+        numberOfDates: true,
+        longitude: true,
+        latitude: true,
+        moistureThreshold: true,
+        temperatureThreshold: true,
+        ecThreshold: true,
+        pHThreshold: true,
+        nThreshold: true,
+        pThreshold: true,
+        kThreshold: true,
+        createAt: true,
+        updateAt: true,
         slots: true,
+        userId: true,
+        user: {
+          select: {
+            firstName: true,
+            lastName: true,
+            email: true,
+            photoUrl: true,
+          },
+        },
+      },
+    });
+
+    return schedules;
+  }
+
+  async getPublicSchedule() {
+    const schedules = await this.prismaService.schedule.findMany({
+      where: {
+        isActive: true,
+        isPublic: true,
+      },
+      orderBy: {
+        updateAt: 'desc', // Order by updateAt in descending order
+      },
+      select: {
+        id: true,
+        title: true,
+        description: true,
+        numberOfViews: true,
+        numberOfCopies: true,
+        isPublic: true,
+        isActive: true,
+        imageData: true,
+        numberOfDates: true,
+        longitude: true,
+        latitude: true,
+        moistureThreshold: true,
+        temperatureThreshold: true,
+        ecThreshold: true,
+        pHThreshold: true,
+        nThreshold: true,
+        pThreshold: true,
+        kThreshold: true,
+        createAt: true,
+        updateAt: true,
+        updateContentAt: true,
+        slots: true,
+        userId: true,
+        user: {
+          select: {
+            firstName: true,
+            lastName: true,
+            email: true,
+            photoUrl: true,
+          },
+        },
       },
     });
 
@@ -350,18 +429,18 @@ export class ScheduleService {
     });
 
     if (!schedule) {
-      throw new ForbiddenException('Schedule is not exist.');
+      throw new NotFoundException('Schedule is not exist.');
     }
 
-    const schedules = await this.getSchedules(userId);
+    // const schedules = await this.getSchedules(userId);
 
-    const isScheduleIdInList = schedules.some(
-      (schedule) => schedule.id === scheduleId,
-    );
+    // const isScheduleIdInList = schedules.some(
+    //   (schedule) => schedule.id === scheduleId,
+    // );
 
-    if (!isScheduleIdInList) {
-      throw new NotFoundException('Schedule is not belonged to this user');
-    }
+    // if (!isScheduleIdInList) {
+    //   throw new NotFoundException('Schedule is not belonged to this user');
+    // }
 
     // console.log(schedule.numberOfViews + 1);
 
@@ -383,18 +462,18 @@ export class ScheduleService {
     });
 
     if (!schedule) {
-      throw new ForbiddenException('Schedule is not exist.');
+      throw new NotFoundException('Schedule is not exist.');
     }
 
-    const schedules = await this.getSchedules(userId);
+    // const schedules = await this.getSchedules(userId);
 
-    const isScheduleIdInList = schedules.some(
-      (schedule) => schedule.id === scheduleId,
-    );
+    // const isScheduleIdInList = schedules.some(
+    //   (schedule) => schedule.id === scheduleId,
+    // );
 
-    if (!isScheduleIdInList) {
-      throw new NotFoundException('Schedule is not belonged to this user');
-    }
+    // if (!isScheduleIdInList) {
+    //   throw new NotFoundException('Schedule is not belonged to this user');
+    // }
 
     return this.prismaService.schedule.update({
       where: {

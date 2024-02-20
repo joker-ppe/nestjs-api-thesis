@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "schedules" ADD COLUMN     "updateContentAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP;

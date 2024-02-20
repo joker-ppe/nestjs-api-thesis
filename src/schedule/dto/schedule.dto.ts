@@ -103,6 +103,16 @@ export class ScheduleDTO {
   @IsNumber()
   @IsOptional()
   @ApiProperty()
+  longitude: number;
+
+  @IsNumber()
+  @IsOptional()
+  @ApiProperty()
+  latitude: number;
+
+  @IsNumber()
+  @IsOptional()
+  @ApiProperty()
   moistureThreshold: number = -1;
 
   @IsNumber()

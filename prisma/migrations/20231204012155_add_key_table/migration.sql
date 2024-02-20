@@ -5,11 +5,75 @@ CREATE TABLE "keys" (
     "key" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
-
     CONSTRAINT "keys_pkey" PRIMARY KEY ("id")
 );
 
+INSERT INTO
+    "keys" ("name", "key", "updatedAt")
+VALUES
+    (
+        'api_key_device',
+        'InVMJN87fOOSvcI15qYnTRDj2YYe8hxH',
+        CURRENT_TIMESTAMP
+    );
 
-INSERT INTO "keys" ("name","key","updatedAt") VALUES ('api_key_device', 'InVMJN87fOOSvcI15qYnTRDj2YYe8hxH',CURRENT_TIMESTAMP);
+INSERT INTO
+    "keys" ("name", "key", "updatedAt")
+VALUES
+    (
+        'JWT_SECRET',
+        'Pass in 2023. Joker key @#@$#@$&^*&^',
+        CURRENT_TIMESTAMP
+    );
 
-INSERT INTO "keys" ("name","key","updatedAt") VALUES ('JWT_SECRET', 'Pass in 2023. Joker key @#@$#@$&^*&^',CURRENT_TIMESTAMP);
+INSERT INTO
+    "keys" ("name", "key", "updatedAt")
+VALUES
+    (
+        'PUBLIC_KEY',
+        '-----BEGIN PUBLIC KEY-----
+MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEArV202tpJpz1DNBW745yH
+Rl1L00AgXinigAdzAW/oBEl7/+7VXPk0RzJUO1DtLiDqyeZLHhNa/b0RIPYdhM8G
+HqPYs6QcGijw35s5OFhvIpvpMqn8qdws+LWKYUlz6I7mE5um/AsVXuKM81CLs6oT
+0BSFBTyO7MFgs0Sp4Ot7j9rtex3WPHeDy2Iqmn9qBNzG2R5vad3XFDf+qCCKR4MO
+b8//DRNb0IStv/RzMi49qzhKN3iswoLXsNjIbivSesGJWjPw0ivvjTVOGYIM1tX3
+YBCeu2uvwhVAl66fwhawFOIbMKgIr6wG1TkutZK+FjQJl4Jtk0tEfLN/jl1LJ+P1
+6wIDAQAB
+-----END PUBLIC KEY-----',
+        CURRENT_TIMESTAMP
+    );
+
+INSERT INTO
+    "keys" ("name", "key", "updatedAt")
+VALUES
+    (
+        'PRIVATE_KEY',
+        '-----BEGIN RSA PRIVATE KEY-----
+MIIEpAIBAAKCAQEArV202tpJpz1DNBW745yHRl1L00AgXinigAdzAW/oBEl7/+7V
+XPk0RzJUO1DtLiDqyeZLHhNa/b0RIPYdhM8GHqPYs6QcGijw35s5OFhvIpvpMqn8
+qdws+LWKYUlz6I7mE5um/AsVXuKM81CLs6oT0BSFBTyO7MFgs0Sp4Ot7j9rtex3W
+PHeDy2Iqmn9qBNzG2R5vad3XFDf+qCCKR4MOb8//DRNb0IStv/RzMi49qzhKN3is
+woLXsNjIbivSesGJWjPw0ivvjTVOGYIM1tX3YBCeu2uvwhVAl66fwhawFOIbMKgI
+r6wG1TkutZK+FjQJl4Jtk0tEfLN/jl1LJ+P16wIDAQABAoIBAAu3Unqb1/Bqbnk9
+osX+FRJHSdGL+uQCNqFqX3ZQZsCraqrgLCEtYkARganEjVLZvKRKYPc2XabaOSce
+Gt6X0xUNA58YTyHhdG3YIqTRLSmMmdTnsgCUtaFVO3XZrfCgf6IBmeZcpWQVMWtc
+HSTWMKKWUGsLLamIZA2ZbVWa9G3DRGHHlW2k8Env8xRUcf71NTsnYoDCPu862Wt4
+CU+kAZYyrqM8uYCbg9ZsPqJiLVrF0kCqKxYOKCf4skuPXmfMo8wiXoMovQyjcsZ1
+ju5FtTr/i3Q1peFy+2Rw2CusZUvSRTWeJOH90mHyBqK0aEUoFEG0FLwoY4iCFWsk
+CEt+SOECgYEA04VqI+ll6iJ67RxB6m6ss9CuBDdijthPQXJcWJi8XG8tR0opZpL2
+1/9RTpjZrBEZko9Y8F6JidqqrF7Y8E1fpuoov+FT3bcldmVncbthsRNv6N/M7qs8
+Aay03vsXEZnXJP61g6N2yJI9EJ/ANW0pLJhsbT3WYbkrum3oF1vGWpsCgYEA0dJU
+bcJuBxV/UDRXJKSCt/nHqPpfF9PDtYEN9e9v3YPFLTemk8TdZqmvglDNGUN3Yejz
+w4t+3p7Qvu2HmZHWbzIhHj2WzOpv025+DwH8Iqc292sTcu/XSiojZGGy3H0IeXei
+fpDvklFLu8gT6HYoUVy0LUoBPn/s7P8UplQHnvECgYEAiX+Oka2lDGBBnGTkDGrJ
+ZVJf7Gm8bbL7QkX+9bDDsSqsOk1hQEaEo8BasEb4KLws7XK1k/tAWRaGH+rABuWl
+KjHJL4JgLB5kAeTFK89tH9jMxIrHAtbY+RW1tcVvJ4fjrS7N+7aE/rjhbS8LmS9O
+tqiWwySReZEPde8AEj8cX8UCgYApbNhEb02f0mu3Xw4RavVv8z2rK/tYTfPmwtsJ
+wkMYvepQ+hrGM+juWvQOy3si0MIiL4bpBYJ/22UlPOo3tKZcf84wFULPpD19xePX
+fLHV+aONh7NoTtf3iYhBSlSw2XKx4J/RUzYpcil8oozjqWheX+omwuSp/UG+rMHb
+8N0sUQKBgQCFxZ/kbNjEC4E7dkWPkmmqEiaAO1HEBJnv5l0wGKcZZxI5Q42vN4ju
+/pbqFyeQ11yB4Qhid2IIgXcbMnH1Hx0A1vHmudCuEzTKU+9tRdLJoCsjU0q27VAV
+4+2glIRNNG0VQ9TvImGB/gxlVixRf78gbLkAvIb+LYVhT580PxzT3g==
+-----END RSA PRIVATE KEY-----',
+        CURRENT_TIMESTAMP
+    );

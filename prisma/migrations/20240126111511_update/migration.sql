@@ -62,9 +62,10 @@ CREATE TABLE "slots" (
 -- CreateTable
 CREATE TABLE "slotStatuses" (
     "id" SERIAL NOT NULL,
-    "updateAt" TIMESTAMP(3) NOT NULL,
     "date" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "dateIndexInSchedule" INTEGER NOT NULL DEFAULT 1,
     "status" "StatusSlot" NOT NULL DEFAULT 'NOT_YET',
+    "updateAt" TIMESTAMP(3) NOT NULL,
     "slotId" INTEGER NOT NULL,
 
     CONSTRAINT "slotStatuses_pkey" PRIMARY KEY ("id")
@@ -95,17 +96,6 @@ CREATE TABLE "devices" (
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "devices_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "keys" (
-    "id" SERIAL NOT NULL,
-    "name" TEXT NOT NULL,
-    "key" TEXT NOT NULL,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
-
-    CONSTRAINT "keys_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateIndex

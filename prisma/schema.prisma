@@ -18,8 +18,6 @@ model User {
   firstName      String? //can be null
   middleName     String? //can be null
   lastName       String?
-  longitude      Float? //can be null
-  latitude       Float? //can be null
   address        String? //can be null
   city           String? //can be null
   country        String? //can be null
@@ -48,6 +46,9 @@ model Schedule {
   imageData      String?
   numberOfDates  Int     @default(0)
 
+  longitude      Float? //can be null
+  latitude       Float? //can be null
+
   moistureThreshold    Float @default(-1)
   temperatureThreshold Float @default(-1)
   ecThreshold          Float @default(-1)
@@ -58,6 +59,7 @@ model Schedule {
 
   createAt DateTime @default(now())
   updateAt DateTime @updatedAt
+  updateContentAt DateTime @default(now())
 
   // relationship
   userId Int //foreign key

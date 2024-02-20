@@ -27,8 +27,6 @@ export class AuthService {
           middleName: registerUserDTO.middleName,
           lastName: registerUserDTO.lastName,
           email: registerUserDTO.email,
-          longitude: registerUserDTO.longitude,
-          latitude: registerUserDTO.latitude,
           address: registerUserDTO.address,
           city: registerUserDTO.city,
           country: registerUserDTO.country,

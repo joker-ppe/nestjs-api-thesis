@@ -27,6 +27,9 @@ model User {
 
   scheduleIdInUse Int? //can be null
 
+  deviceId Int? @unique //can be null @unique @unique
+  deviceAccessToken String? //can be null
+
   //relationship
   schedules Schedule[]
   histores  History[]
@@ -46,8 +49,8 @@ model Schedule {
   imageData      String?
   numberOfDates  Int     @default(0)
 
-  longitude      Float? //can be null
-  latitude       Float? //can be null
+  longitude Float? //can be null
+  latitude  Float? //can be null
 
   moistureThreshold    Float @default(-1)
   temperatureThreshold Float @default(-1)
@@ -57,8 +60,8 @@ model Schedule {
   pThreshold           Float @default(-1)
   kThreshold           Float @default(-1)
 
-  createAt DateTime @default(now())
-  updateAt DateTime @updatedAt
+  createAt        DateTime @default(now())
+  updateAt        DateTime @updatedAt
   updateContentAt DateTime @default(now())
 
   // relationship
@@ -100,13 +103,13 @@ model Slot {
 }
 
 model SlotStatus {
-  id                  Int        @id @default(autoincrement())
-  
+  id Int @id @default(autoincrement())
+
   date                DateTime   @default(now())
   dateIndexInSchedule Int        @default(1)
   status              StatusSlot @default(NOT_YET)
 
-  updateAt            DateTime   @updatedAt
+  updateAt DateTime @updatedAt
 
   // relationship
   // relationship
@@ -159,6 +162,9 @@ model Device {
   systemInfo   String?
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
+
+  userId Int? @unique //can be null @unique
+  
 
   @@unique([macAddress, serialNumber])
   @@map("devices")

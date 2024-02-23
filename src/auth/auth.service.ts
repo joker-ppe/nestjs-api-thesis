@@ -94,7 +94,7 @@ export class AuthService {
       userName,
     };
     const jwtString = await this.jwtService.signAsync(payload, {
-      expiresIn: 24 * 3600, // 24 hours
+      expiresIn: 72 * 3600, // 24 hours
       secret: await this.getSecretFromDatabase(),
     });
 

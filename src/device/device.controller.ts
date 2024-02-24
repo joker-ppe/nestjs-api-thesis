@@ -19,7 +19,7 @@ export class DeviceController {
 
   @Get('id/:id')
   getDeviceById(
-    @Query('api_key') apiKey: string,
+    @Query('apiKey') apiKey: string,
     @Param('id', ParseIntPipe) deviceId: number,
   ) {
     return this.deviceService.getDeviceById(apiKey, deviceId);
@@ -27,7 +27,7 @@ export class DeviceController {
 
   @Get()
   getDeviceByMacAddressAndSerialNumber(
-    @Query('api_key') apiKey: string,
+    @Query('apiKey') apiKey: string,
     @Query('macAddress') macAddress: string,
     @Query('serialNumber') serialNumber: string,
   ) {
@@ -39,13 +39,13 @@ export class DeviceController {
   }
 
   @Post()
-  insertDevice(@Query('api_key') apiKey: string, @Body() deviceDTO: DeviceDTO) {
+  insertDevice(@Query('apiKey') apiKey: string, @Body() deviceDTO: DeviceDTO) {
     return this.deviceService.insertDevice(apiKey, deviceDTO);
   }
 
   @Patch('id/:id')
   updateDeviceInfo(
-    @Query('api_key') apiKey: string,
+    @Query('apiKey') apiKey: string,
     @Param('id', ParseIntPipe) deviceId: number,
     @Body() deviceDTO: DeviceDTO,
   ) {

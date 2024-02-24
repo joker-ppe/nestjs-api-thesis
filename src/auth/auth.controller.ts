@@ -1,4 +1,4 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Post, Query } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthDTO } from './dto';
 import { ApiTags } from '@nestjs/swagger';
@@ -12,15 +12,18 @@ export class AuthController {
 
   @Post('register') // register new user
   // register(@Req() request: Request) {
-  register(@Body() registerUserDTO: RegisterUserDTO) {
+  register(
+    @Query('apiKey') apiKey: string,
+    @Body() registerUserDTO: RegisterUserDTO,
+  ) {
     // body'type must be a "Data Transfer object" - DTO
     // console.log(authDTO);
 
-    return this.authService.register(registerUserDTO);
+    return this.authService.register(apiKey, registerUserDTO);
   }
 
   @Post('login') // login new user
-  login(@Body() authDTO: AuthDTO) {
-    return this.authService.login(authDTO);
+  login(@Query('apiKey') apiKey: string, @Body() authDTO: AuthDTO) {
+    return this.authService.login(apiKey, authDTO);
   }
 }

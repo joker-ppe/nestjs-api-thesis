@@ -1,4 +1,8 @@
-import { ForbiddenException, Injectable } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { AuthDTO } from './dto';
 import * as argon from 'argon2';
 import { JwtService } from '@nestjs/jwt';
@@ -14,7 +18,17 @@ export class AuthService {
     private configService: ConfigService,
   ) {}
 
-  async register(registerUserDTO: RegisterUserDTO) {
+  async register(apiKey: string, registerUserDTO: RegisterUserDTO) {
+    const apiKeyOnSystem = await this.prismaService.key.findFirst({
+      where: {
+        name: 'api_key_device',
+      },
+    });
+
+    if (apiKey !== apiKeyOnSystem.key) {
+      throw new NotFoundException('Wrong API key');
+    }
+
     //generate password to hashedPassword
     const hashedPassword = await argon.hash(registerUserDTO.password);
     //insert dat to database
@@ -47,8 +61,18 @@ export class AuthService {
       throw new ForbiddenException(error.message);
     }
   }
-  async login(authDTO: AuthDTO) {
+  async login(apiKey: string, authDTO: AuthDTO) {
     // find user with input email
+
+    const apiKeyOnSystem = await this.prismaService.key.findFirst({
+      where: {
+        name: 'api_key_device',
+      },
+    });
+
+    if (apiKey !== apiKeyOnSystem.key) {
+      throw new NotFoundException('Wrong API key');
+    }
 
     try {
       const user = await this.prismaService.user.findUnique({

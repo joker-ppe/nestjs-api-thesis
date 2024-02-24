@@ -90,7 +90,7 @@ export class UserService implements OnModuleInit {
       },
     });
 
-    await this.prismaService.device.update({
+    const cabinet = await this.prismaService.device.update({
       where: {
         id: deviceId,
       },
@@ -109,7 +109,7 @@ export class UserService implements OnModuleInit {
 
     await rabbitMQService.sendToQueue(topic, data.encryptedData);
 
-    return JSON.parse(data.encryptedData);
+    return JSON.stringify(cabinet);
   }
 
   async removeDevice(userId: number) {

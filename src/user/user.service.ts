@@ -74,10 +74,11 @@ export class UserService implements OnModuleInit {
     const device = await this.prismaService.device.findFirst({
       where: {
         id: deviceId,
+        userId: userId,
       },
     });
     if (!device) {
-      throw new NotFoundException('Device not found');
+      throw new NotFoundException('Device not found or not belong to user');
     }
 
     await this.prismaService.user.update({

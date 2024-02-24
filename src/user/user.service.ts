@@ -74,11 +74,17 @@ export class UserService implements OnModuleInit {
     const device = await this.prismaService.device.findFirst({
       where: {
         id: deviceId,
-        userId: userId,
       },
     });
     if (!device) {
-      throw new NotFoundException('Device not found or not belong to user');
+      throw new NotFoundException('Device not found');
+    }
+    if (device.userId) {
+      if (device.userId === userId) {
+        throw new NotFoundException('Device already assigned to this user');
+      } else {
+        throw new NotFoundException('Device already assigned to another user');
+      }
     }
 
     await this.prismaService.user.update({

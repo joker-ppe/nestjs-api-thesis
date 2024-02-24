@@ -81,7 +81,7 @@ export class UserService implements OnModuleInit {
     }
     if (device.userId) {
       if (device.userId === userId) {
-        throw new NotFoundException('Device already assigned to this user');
+        return JSON.stringify(device);
       } else {
         throw new NotFoundException('Device already assigned to another user');
       }

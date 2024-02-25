@@ -155,7 +155,7 @@ export class UserService implements OnModuleInit {
       },
     });
 
-    return { deviceId: deviceId, userId: user.id };
+    return JSON.stringify(user);
   }
 
   async encryptData(

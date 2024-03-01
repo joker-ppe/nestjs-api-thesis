@@ -10,13 +10,18 @@ import {
 } from 'class-validator';
 
 export enum SlotStatus {
-  NotYet = 'NOT_YET',
-  Done = 'DONE',
-  Cancel = 'CANCEL',
-  Error = 'ERROR',
-  Unknown = 'UNKNOWN',
+  NOT_YET = 'NOT_YET',
+  DONE = 'DONE',
+  IN_PROGRESS = 'IN_PROGRESS',
+  CANCEL = 'CANCEL',
+  ERROR = 'ERROR',
+  UNKNOWN = 'UNKNOWN',
   // Add more status codes as needed
 }
+
+export const isSlotStatus = (status: any): status is SlotStatus => {
+  return status in SlotStatus;
+};
 
 export class DeviceDTO {
   id: number;
@@ -67,6 +72,18 @@ export class SlotStatusDTO {
   @IsEnum(SlotStatus)
   @ApiProperty()
   status: string;
+}
+
+export class DateInScheduleInUseDTO {
+  index: number;
+
+  slots: SlotInScheduleInUseDTO[];
+}
+
+export class SlotInScheduleInUseDTO {
+  index: number;
+  status: string = SlotStatus.NOT_YET;
+  note: string;
 }
 
 export class ScheduleDTO {

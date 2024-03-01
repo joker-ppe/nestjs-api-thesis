@@ -1,3 +1,7 @@
+import {
+  DateInScheduleInUseDTO,
+  SlotInScheduleInUseDTO,
+} from './dto/schedule.dto';
 import { HistoryService } from './../history/history.service';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { ScheduleDTO, SlotStatus } from './dto';
@@ -11,11 +15,20 @@ export class ScheduleService {
   ) {}
 
   async getSchedules(userId: number) {
+    const user = await this.prismaService.user.findUnique({
+      where: {
+        id: userId,
+      },
+    });
+
     const schedules = await this.prismaService.schedule.findMany({
       where: {
         userId: userId,
         // get schedules have status active only
         isActive: true,
+        id: {
+          not: user.scheduleIdInUse,
+        },
       },
       orderBy: {
         updateContentAt: 'desc', // Order by updateAt in descending order
@@ -24,6 +37,7 @@ export class ScheduleService {
         slots: true,
       },
     });
+
     return schedules;
   }
 
@@ -275,26 +289,18 @@ export class ScheduleService {
       select: {
         userName: true,
         scheduleIdInUse: true,
+        scheduleInUseData: true,
       },
     });
 
     if (user) {
-      const scheduleIdInUse = user.scheduleIdInUse;
+      const scheduleInUse = JSON.parse(user.scheduleInUseData);
 
-      if (!scheduleIdInUse) {
+      if (!scheduleInUse) {
         throw new NotFoundException(
           `User '${user.userName}' does not apply any schedule`,
         );
       }
-
-      const scheduleInUse = await this.prismaService.schedule.findUnique({
-        where: {
-          id: scheduleIdInUse,
-        },
-        include: {
-          slots: true,
-        },
-      });
 
       return scheduleInUse;
     } else {
@@ -305,107 +311,65 @@ export class ScheduleService {
   async updateScheduleInUse(userId: number, scheduleId: number) {
     const schedules = await this.getSchedules(userId);
 
-    const isScheduleIdInList = schedules.some(
+    const inUsedSchedule = schedules.find(
       (schedule) => schedule.id === scheduleId,
     );
 
-    if (isScheduleIdInList) {
-      const user = await this.prismaService.user.findUnique({
-        where: {
-          id: userId,
-        },
-        select: {
-          userName: true,
-          scheduleIdInUse: true,
-        },
-      });
-
-      if (user.scheduleIdInUse) {
-        if (user.scheduleIdInUse != scheduleId) {
-          const totalSlotsCount = await this.prismaService.slot.count({
-            where: {
-              scheduleId: user.scheduleIdInUse,
-            },
-          });
-
-          const statusDoneSlotsCount =
-            await this.prismaService.slotStatus.count({
-              where: {
-                slot: {
-                  scheduleId: user.scheduleIdInUse,
-                },
-                status: SlotStatus.Done,
-              },
-            });
-
-          if (totalSlotsCount === 0) {
-            return 0; // To avoid division by zero
-          }
-
-          const percentage = (statusDoneSlotsCount * 100) / totalSlotsCount;
-
-          // add history
-          await this.historyService.markHistoryAsCompleted(
-            userId,
-            user.scheduleIdInUse,
-            percentage,
-          );
-
-          // add history
-          await this.historyService.insertNewHistory(userId, scheduleId);
-        }
-      } else {
-        // add history
-        await this.historyService.insertNewHistory(userId, scheduleId);
-      }
-
-      return await this.prismaService.user.update({
-        where: {
-          id: userId,
-        },
-        data: {
-          scheduleIdInUse: scheduleId,
-        },
-        select: {
-          userName: true,
-          scheduleIdInUse: true,
-        },
-      });
-    } else {
+    if (!inUsedSchedule) {
       throw new NotFoundException('Schedule is not belonged to this user');
     }
+
+    const today = new Date();
+    const tomorrow = new Date();
+    tomorrow.setDate(today.getDate() + 1);
+
+    const listDateData = new Array<DateInScheduleInUseDTO>();
+
+    for (let i = 0; i < inUsedSchedule.numberOfDates; i++) {
+      const dateData = new DateInScheduleInUseDTO();
+      dateData.index = i + 1;
+      dateData.slots = new Array<SlotInScheduleInUseDTO>();
+
+      for (let j = 0; j < inUsedSchedule.slots.length; j++) {
+        const slotData = new SlotInScheduleInUseDTO();
+        slotData.index = j + 1;
+        slotData.status = SlotStatus.NOT_YET;
+
+        dateData.slots.push(slotData);
+      }
+
+      listDateData.push(dateData);
+    }
+
+    inUsedSchedule['registrationDate'] = today;
+    inUsedSchedule['startedDate'] = tomorrow;
+    inUsedSchedule['listDateData'] = listDateData;
+
+    await this.prismaService.user.update({
+      where: {
+        id: userId,
+      },
+      data: {
+        scheduleIdInUse: scheduleId,
+        scheduleInUseData: JSON.stringify(inUsedSchedule),
+      },
+      select: {
+        id: true,
+        userName: true,
+        scheduleIdInUse: true,
+        scheduleInUseData: false,
+      },
+    });
+
+    return inUsedSchedule;
   }
 
   async removeScheduleInUse(userId: number) {
     const scheduleInUse = await this.getScheduleInUse(userId);
 
-    const totalSlotsCount = await this.prismaService.slot.count({
-      where: {
-        scheduleId: scheduleInUse.id,
-      },
-    });
-
-    const statusDoneSlotsCount = await this.prismaService.slotStatus.count({
-      where: {
-        slot: {
-          scheduleId: scheduleInUse.id,
-        },
-        status: SlotStatus.Done,
-      },
-    });
-
-    if (totalSlotsCount === 0) {
-      return 0; // To avoid division by zero
+    if (!scheduleInUse) {
+      throw new NotFoundException('Schedule in use is not exist.');
     }
-
-    const percentage = (statusDoneSlotsCount * 100) / totalSlotsCount;
-
-    // add history
-    await this.historyService.markHistoryAsCompleted(
-      userId,
-      scheduleInUse.id,
-      percentage,
-    );
 
     return await this.prismaService.user.update({
       where: {
@@ -413,6 +377,7 @@ export class ScheduleService {
       },
       data: {
         scheduleIdInUse: null,
+        scheduleInUseData: null,
       },
       select: {
         userName: true,
@@ -432,6 +397,19 @@ export class ScheduleService {
       throw new NotFoundException('Schedule is not exist.');
     }
 
+    if (schedule.userId === userId) {
+      return schedule;
+    } else {
+      return this.prismaService.schedule.update({
+        where: {
+          id: scheduleId,
+        },
+        data: {
+          numberOfViews: schedule.numberOfViews + 1,
+        },
+      });
+    }
+
     // const schedules = await this.getSchedules(userId);
 
     // const isScheduleIdInList = schedules.some(
@@ -443,15 +421,6 @@ export class ScheduleService {
     // }
 
     // console.log(schedule.numberOfViews + 1);
-
-    return this.prismaService.schedule.update({
-      where: {
-        id: scheduleId,
-      },
-      data: {
-        numberOfViews: schedule.numberOfViews + 1,
-      },
-    });
   }
 
   async plusNumberOfCopies(userId: number, scheduleId: number) {
@@ -465,6 +434,19 @@ export class ScheduleService {
       throw new NotFoundException('Schedule is not exist.');
     }
 
+    if (schedule.userId === userId) {
+      return schedule;
+    } else {
+      return this.prismaService.schedule.update({
+        where: {
+          id: scheduleId,
+        },
+        data: {
+          numberOfCopies: schedule.numberOfCopies + 1,
+        },
+      });
+    }
+
     // const schedules = await this.getSchedules(userId);
 
     // const isScheduleIdInList = schedules.some(
@@ -474,14 +456,5 @@ export class ScheduleService {
     // if (!isScheduleIdInList) {
     //   throw new NotFoundException('Schedule is not belonged to this user');
     // }
-
-    return this.prismaService.schedule.update({
-      where: {
-        id: scheduleId,
-      },
-      data: {
-        numberOfCopies: schedule.numberOfCopies + 1,
-      },
-    });
   }
 }

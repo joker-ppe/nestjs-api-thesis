@@ -26,6 +26,7 @@ model User {
   photoUrl       String? //can be null
 
   scheduleIdInUse Int? //can be null
+  scheduleInUseData String? //can be null
 
   deviceId Int? @unique //can be null @unique @unique
   deviceAccessToken String? //can be null
@@ -97,27 +98,27 @@ model Slot {
   scheduleId Int
   schedule   Schedule @relation(fields: [scheduleId], references: [id])
 
-  slotStatuses SlotStatus[]
+  // slotStatuses SlotStatus[]
 
   @@map("slots")
 }
 
-model SlotStatus {
-  id Int @id @default(autoincrement())
+// model SlotStatus {
+//   id Int @id @default(autoincrement())
 
-  date                DateTime   @default(now())
-  dateIndexInSchedule Int        @default(1)
-  status              StatusSlot @default(NOT_YET)
+//   date                DateTime   @default(now())
+//   dateIndexInSchedule Int        @default(1)
+//   status              StatusSlot @default(NOT_YET)
 
-  updateAt DateTime @updatedAt
+//   updateAt DateTime @updatedAt
 
-  // relationship
-  // relationship
-  slotId Int
-  slot   Slot @relation(fields: [slotId], references: [id])
+//   // relationship
+//   // relationship
+//   slotId Int
+//   slot   Slot @relation(fields: [slotId], references: [id])
 
-  @@map("slotStatuses")
-}
+//   @@map("slotStatuses")
+// }
 
 enum StatusSlot {
   NOT_YET

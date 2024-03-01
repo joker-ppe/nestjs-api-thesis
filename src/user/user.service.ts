@@ -71,7 +71,7 @@ export class UserService implements OnModuleInit {
     accessToken: string,
   ) {
     // check device first
-    const device = await this.prismaService.device.findFirst({
+    const device = await this.prismaService.device.findUnique({
       where: {
         id: deviceId,
       },
@@ -79,6 +79,17 @@ export class UserService implements OnModuleInit {
     if (!device) {
       throw new NotFoundException('Device not found');
     }
+
+    const user = await this.prismaService.user.findUnique({
+      where: {
+        id: userId,
+      },
+    });
+
+    if (user.scheduleIdInUse || user.scheduleInUseData) {
+      throw new NotFoundException('User still has schedule in use');
+    }
+
     if (device.userId) {
       if (device.userId === userId) {
         return JSON.stringify(device);
@@ -106,13 +117,13 @@ export class UserService implements OnModuleInit {
       },
     });
 
-    const user = {
+    const userData = {
       userId: userId,
       deviceId: deviceId,
       accessToken: accessToken,
     };
 
-    const data = this.encrypt(JSON.stringify(user));
+    const data = this.encrypt(JSON.stringify(userData));
 
     await rabbitMQService.sendToQueue(topic, data.encryptedData);
 
@@ -136,6 +147,10 @@ export class UserService implements OnModuleInit {
       throw new NotFoundException('Device not found');
     }
 
+    if (user.scheduleIdInUse || user.scheduleInUseData) {
+      throw new NotFoundException('User still has schedule in use');
+    }
+
     await this.prismaService.user.update({
       where: {
         id: user.id,
@@ -155,7 +170,7 @@ export class UserService implements OnModuleInit {
       },
     });
 
-    return JSON.stringify(user);
+    return user;
   }
 
   async encryptData(

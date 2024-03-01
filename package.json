@@ -32,7 +32,7 @@
     "@nestjs/passport": "^10.0.2",
     "@nestjs/platform-express": "^10.2.7",
     "@nestjs/swagger": "^7.1.13",
-    "@prisma/client": "^5.7.0",
+    "@prisma/client": "^5.10.2",
     "amqplib": "^0.10.3",
     "argon2": "^0.31.1",
     "class-transformer": "^0.5.1",

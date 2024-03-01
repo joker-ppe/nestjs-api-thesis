@@ -1,6 +1,5 @@
 import {
   Controller,
-  Param,
   ParseIntPipe,
   Patch,
   Query,
@@ -18,14 +17,24 @@ import { GetUser } from 'src/auth/decorator';
 export class SlotController {
   constructor(private slotService: SlotService) {}
 
-  @Patch(':id/status')
+  @Patch('status')
   updateSlotStatus(
     @GetUser('id') userId: number,
-    @Param('id', ParseIntPipe) slotId: number,
+    @Query('scheduleId', ParseIntPipe) scheduleId: number,
+    @Query('dayIndex', ParseIntPipe) dayIndex: number,
+    @Query('slotIndex', ParseIntPipe) slotIndex: number,
+    @Query('note') note: string,
 
-    @Query('statusCode', ParseIntPipe)
-    statusCode: number,
+    @Query('status')
+    status: string,
   ) {
-    return this.slotService.updateSlotStatus(userId, slotId, statusCode);
+    return this.slotService.updateSlotStatus(
+      userId,
+      scheduleId,
+      dayIndex,
+      slotIndex,
+      note,
+      status,
+    );
   }
 }

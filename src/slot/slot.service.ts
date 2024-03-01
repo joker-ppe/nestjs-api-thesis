@@ -1,58 +1,73 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { SlotStatus } from 'src/schedule/dto';
+import { isSlotStatus } from 'src/schedule/dto';
 
 @Injectable()
 export class SlotService {
   constructor(private prismaService: PrismaService) {}
 
-  async updateSlotStatus(userId: number, slotId: number, statusCode: number) {
-    // check status code
-    const statuses = await this.prismaService.slotStatus.findMany();
-
-    const isCodeExists = statuses.some((status) => status.id === statusCode);
-
-    if (!isCodeExists) {
-      throw new NotFoundException('Invalid status code: ' + statusCode);
-    }
-
+  async updateSlotStatus(
+    userId: number,
+    scheduleId: number,
+    dayIndex: number,
+    slotIndex: number,
+    note: string,
+    status: string,
+  ) {
     // First, find the user by their userId
     const user = await this.prismaService.user.findUnique({
       where: {
         id: userId,
-      },
-      // Include the user's schedules and the days and slots within those schedules
-      include: {
-        schedules: {
-          include: {
-            slots: true, // Include the slots in the days
-          },
-        },
+        scheduleIdInUse: scheduleId,
       },
     });
 
-    delete user.hashedPassword;
-
-    // Now, you can check if slotId belongs to any of the user's schedules
-    const slotExists = user.schedules.some((schedule) =>
-      schedule.slots.some((slot) => slot.id === slotId),
-    );
-
-    if (slotExists) {
-      return this.prismaService.slotStatus.update({
-        where: {
-          id: slotId,
-        },
-        data: {
-          status: SlotStatus.Done,
-        },
-      });
-    } else {
-      throw new NotFoundException(
-        `Slot does not exist in this user's schedules`,
-      );
+    if (!user) {
+      throw new NotFoundException('User do not have schedule in use.');
     }
 
+    const scheduleInUse = JSON.parse(user.scheduleInUseData);
+
+    if (dayIndex < 1 || dayIndex > scheduleInUse['listDateData'].length) {
+      throw new NotFoundException('Invalid day index');
+    }
+
+    // console.log(scheduleInUse['slots'].length);
+
+    if (slotIndex < 1 || slotIndex > scheduleInUse['slots'].length) {
+      throw new NotFoundException('Invalid slot index');
+    }
+
+    // check enum
+    if (!isSlotStatus(status)) {
+      throw new NotFoundException('Invalid slot status');
+    }
+
+    const slot =
+      scheduleInUse['listDateData'][dayIndex - 1]['slots'][slotIndex - 1];
+
+    // console.log(slot);
+    slot['status'] = status;
+
+    if (note && note.length > 0) {
+      slot['note'] = note;
+    }
     // return user;
+
+    const listDateData = scheduleInUse['listDateData'];
+    listDateData[dayIndex - 1]['slots'][slotIndex - 1] = slot;
+
+    scheduleInUse['listDateData'] = listDateData;
+
+    await this.prismaService.user.update({
+      where: {
+        id: userId,
+      },
+      data: {
+        scheduleInUseData: JSON.stringify(scheduleInUse),
+      },
+    });
+
+    return slot;
   }
 }

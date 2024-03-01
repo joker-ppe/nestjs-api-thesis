@@ -21,13 +21,18 @@ export class ScheduleService {
       },
     });
 
+    let scheduleIdInUse = 0;
+    if (!user.scheduleIdInUse) {
+      scheduleIdInUse = user.scheduleIdInUse;
+    }
+
     const schedules = await this.prismaService.schedule.findMany({
       where: {
         userId: userId,
         // get schedules have status active only
         isActive: true,
         id: {
-          not: user.scheduleIdInUse,
+          not: scheduleIdInUse,
         },
       },
       orderBy: {

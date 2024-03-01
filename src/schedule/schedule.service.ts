@@ -22,7 +22,7 @@ export class ScheduleService {
     });
 
     let scheduleIdInUse = 0;
-    if (!user.scheduleIdInUse) {
+    if (user.scheduleIdInUse !== null) {
       scheduleIdInUse = user.scheduleIdInUse;
     }
 

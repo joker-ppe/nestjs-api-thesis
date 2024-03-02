@@ -311,13 +311,27 @@ export class ScheduleService {
     });
 
     if (user) {
-      const scheduleInUse = JSON.parse(user.scheduleInUseData);
+      const inUsedScheduleData = JSON.parse(user.scheduleInUseData);
 
-      if (!scheduleInUse) {
+      if (!inUsedScheduleData && user.scheduleIdInUse === null) {
         throw new NotFoundException(
           `User '${user.userName}' does not apply any schedule`,
         );
       }
+
+      const scheduleInUse = await this.prismaService.schedule.findUnique({
+        where: {
+          id: user.scheduleIdInUse,
+        },
+        include: {
+          slots: true,
+        },
+      });
+
+      scheduleInUse['registrationDate'] =
+        inUsedScheduleData['registrationDate'];
+      scheduleInUse['startedDate'] = inUsedScheduleData['startedDate'];
+      scheduleInUse['listDateData'] = inUsedScheduleData['listDateData'];
 
       return scheduleInUse;
     } else {
@@ -358,9 +372,11 @@ export class ScheduleService {
       listDateData.push(dateData);
     }
 
-    inUsedSchedule['registrationDate'] = today;
-    inUsedSchedule['startedDate'] = tomorrow;
-    inUsedSchedule['listDateData'] = listDateData;
+    const inUsedScheduleData = {};
+
+    inUsedScheduleData['registrationDate'] = today;
+    inUsedScheduleData['startedDate'] = tomorrow;
+    inUsedScheduleData['listDateData'] = listDateData;
 
     await this.prismaService.user.update({
       where: {
@@ -368,7 +384,7 @@ export class ScheduleService {
       },
       data: {
         scheduleIdInUse: scheduleId,
-        scheduleInUseData: JSON.stringify(inUsedSchedule),
+        scheduleInUseData: JSON.stringify(inUsedScheduleData),
       },
       select: {
         id: true,

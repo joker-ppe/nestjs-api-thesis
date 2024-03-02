@@ -23,6 +23,32 @@ export const isSlotStatus = (status: any): status is SlotStatus => {
   return status in SlotStatus;
 };
 
+export const parseDateToString = (date: Date): string => {
+  return date.toLocaleDateString('en-GB', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+  });
+};
+
+export const parseDate = (dateString: string): Date => {
+  const parts = dateString.split('/');
+  if (parts.length !== 3) {
+    return null;
+  }
+  const date = new Date(
+    Number(parts[2]),
+    Number(parts[1]) - 1,
+    Number(parts[0]),
+  );
+  if (isNaN(date.getTime())) {
+    // The string is not a valid date
+    return null;
+  } else {
+    return date;
+  }
+};
+
 export class DeviceDTO {
   id: number;
 
@@ -76,6 +102,7 @@ export class SlotStatusDTO {
 
 export class DateInScheduleInUseDTO {
   index: number;
+  date: string;
 
   slots: SlotInScheduleInUseDTO[];
 }

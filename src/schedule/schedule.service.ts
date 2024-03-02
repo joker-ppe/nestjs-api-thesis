@@ -1,6 +1,7 @@
 import {
   DateInScheduleInUseDTO,
   SlotInScheduleInUseDTO,
+  parseDateToString,
 } from './dto/schedule.dto';
 import { HistoryService } from './../history/history.service';
 import { Injectable, NotFoundException } from '@nestjs/common';
@@ -359,6 +360,9 @@ export class ScheduleService {
     for (let i = 0; i < inUsedSchedule.numberOfDates; i++) {
       const dateData = new DateInScheduleInUseDTO();
       dateData.index = i + 1;
+      const date = new Date();
+      date.setDate(today.getDate() + i + 1);
+      dateData.date = parseDateToString(date);
       dateData.slots = new Array<SlotInScheduleInUseDTO>();
 
       for (let j = 0; j < inUsedSchedule.slots.length; j++) {
@@ -374,8 +378,8 @@ export class ScheduleService {
 
     const inUsedScheduleData = {};
 
-    inUsedScheduleData['registrationDate'] = today;
-    inUsedScheduleData['startedDate'] = tomorrow;
+    inUsedScheduleData['registrationDate'] = parseDateToString(today);
+    inUsedScheduleData['startedDate'] = parseDateToString(tomorrow);
     inUsedScheduleData['listDateData'] = listDateData;
 
     await this.prismaService.user.update({
@@ -393,6 +397,10 @@ export class ScheduleService {
         scheduleInUseData: false,
       },
     });
+
+    inUsedSchedule['registrationDate'] = inUsedScheduleData['registrationDate'];
+    inUsedSchedule['startedDate'] = inUsedScheduleData['startedDate'];
+    inUsedSchedule['listDateData'] = inUsedScheduleData['listDateData'];
 
     return inUsedSchedule;
   }

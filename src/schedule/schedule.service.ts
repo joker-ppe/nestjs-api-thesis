@@ -126,7 +126,7 @@ export class ScheduleService {
 
     const isScheduleIdInList = schedules.some(
       (schedule) =>
-        schedule.id === scheduleId || schedule.id === scheduleIdInUse,
+        schedule.id === scheduleId || scheduleId === scheduleIdInUse,
     );
 
     if (!isScheduleIdInList) {

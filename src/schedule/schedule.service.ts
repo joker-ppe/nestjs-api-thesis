@@ -111,10 +111,22 @@ export class ScheduleService {
       throw new NotFoundException('Schedule is not exist.');
     }
 
+    const user = await this.prismaService.user.findUnique({
+      where: {
+        id: userId,
+      },
+    });
+
+    let scheduleIdInUse = 0;
+    if (user.scheduleIdInUse !== null) {
+      scheduleIdInUse = user.scheduleIdInUse;
+    }
+
     const schedules = await this.getSchedules(userId);
 
     const isScheduleIdInList = schedules.some(
-      (schedule) => schedule.id === scheduleId,
+      (schedule) =>
+        schedule.id === scheduleId || schedule.id === scheduleIdInUse,
     );
 
     if (!isScheduleIdInList) {

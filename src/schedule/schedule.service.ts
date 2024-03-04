@@ -332,6 +332,7 @@ export class ScheduleService {
       scheduleInUse['registrationDate'] =
         inUsedScheduleData['registrationDate'];
       scheduleInUse['startedDate'] = inUsedScheduleData['startedDate'];
+      scheduleInUse['stoppedDate'] = inUsedScheduleData['stoppedDate'];
       scheduleInUse['listDateData'] = inUsedScheduleData['listDateData'];
 
       return scheduleInUse;

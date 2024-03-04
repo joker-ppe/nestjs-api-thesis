@@ -354,6 +354,8 @@ export class ScheduleService {
     const today = new Date();
     const tomorrow = new Date();
     tomorrow.setDate(today.getDate() + 1);
+    const endDate = new Date();
+    endDate.setDate(today.getDate() + inUsedSchedule.numberOfDates);
 
     const listDateData = new Array<DateInScheduleInUseDTO>();
 
@@ -380,6 +382,7 @@ export class ScheduleService {
 
     inUsedScheduleData['registrationDate'] = parseDateToString(today);
     inUsedScheduleData['startedDate'] = parseDateToString(tomorrow);
+    inUsedScheduleData['stoppedDate'] = parseDateToString(endDate);
     inUsedScheduleData['listDateData'] = listDateData;
 
     await this.prismaService.user.update({
@@ -400,6 +403,7 @@ export class ScheduleService {
 
     inUsedSchedule['registrationDate'] = inUsedScheduleData['registrationDate'];
     inUsedSchedule['startedDate'] = inUsedScheduleData['startedDate'];
+    inUsedSchedule['stoppedDate'] = inUsedScheduleData['stoppedDate'];
     inUsedSchedule['listDateData'] = inUsedScheduleData['listDateData'];
 
     return inUsedSchedule;

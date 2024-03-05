@@ -31,6 +31,7 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
       throw new UnauthorizedException();
     }
     delete user.hashedPassword;
+    delete user.deviceAccessToken;
     return user;
   }
 

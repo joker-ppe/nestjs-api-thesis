@@ -9,7 +9,7 @@ export class SlotService {
   async updateSlotStatus(
     userId: number,
     scheduleId: number,
-    dayIndex: number,
+    day: string,
     slotIndex: number,
     note: string,
     status: string,
@@ -26,15 +26,22 @@ export class SlotService {
       throw new NotFoundException('User do not have schedule in use.');
     }
 
-    const scheduleInUse = JSON.parse(user.scheduleInUseData);
+    const schedule = await this.prismaService.schedule.findUnique({
+      where: {
+        id: scheduleId,
+      },
+      include: {
+        slots: true,
+      },
+    });
 
-    if (dayIndex < 1 || dayIndex > scheduleInUse['listDateData'].length) {
-      throw new NotFoundException('Invalid day index');
+    if (!schedule) {
+      throw new NotFoundException('Schedule not found');
     }
 
-    // console.log(scheduleInUse['slots'].length);
+    const scheduleInUse = JSON.parse(user.scheduleInUseData);
 
-    if (slotIndex < 1 || slotIndex > scheduleInUse['slots'].length) {
+    if (slotIndex < 1 || slotIndex > schedule['slots'].length) {
       throw new NotFoundException('Invalid slot index');
     }
 
@@ -43,8 +50,16 @@ export class SlotService {
       throw new NotFoundException('Invalid slot status');
     }
 
-    const slot =
-      scheduleInUse['listDateData'][dayIndex - 1]['slots'][slotIndex - 1];
+    const data = scheduleInUse['listDateData'];
+    const dayIndex = data.findIndex((item) => item['date'] === day);
+
+    console.log(dayIndex);
+
+    if (dayIndex < 0) {
+      throw new NotFoundException('Invalid day. Day must be format dd/MM/yyyy');
+    }
+
+    const slot = data[dayIndex]['slots'][slotIndex - 1];
 
     // console.log(slot);
     slot['status'] = status;
@@ -55,7 +70,7 @@ export class SlotService {
     // return user;
 
     const listDateData = scheduleInUse['listDateData'];
-    listDateData[dayIndex - 1]['slots'][slotIndex - 1] = slot;
+    listDateData[dayIndex]['slots'][slotIndex - 1] = slot;
 
     scheduleInUse['listDateData'] = listDateData;
 

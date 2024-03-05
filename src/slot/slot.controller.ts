@@ -21,7 +21,7 @@ export class SlotController {
   updateSlotStatus(
     @GetUser('id') userId: number,
     @Query('scheduleId', ParseIntPipe) scheduleId: number,
-    @Query('dayIndex', ParseIntPipe) dayIndex: number,
+    @Query('day') day: string,
     @Query('slotIndex', ParseIntPipe) slotIndex: number,
     @Query('note') note: string,
 
@@ -31,7 +31,7 @@ export class SlotController {
     return this.slotService.updateSlotStatus(
       userId,
       scheduleId,
-      dayIndex,
+      day,
       slotIndex,
       note,
       status,

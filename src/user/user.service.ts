@@ -125,7 +125,7 @@ export class UserService implements OnModuleInit {
 
     const data = this.encrypt(JSON.stringify(userData));
 
-    await rabbitMQService.sendToQueue(topic, data.encryptedData);
+    await rabbitMQService.sendToExchange(topic, data.encryptedData);
 
     return JSON.stringify(cabinet);
   }

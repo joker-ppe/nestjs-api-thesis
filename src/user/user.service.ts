@@ -64,12 +64,7 @@ export class UserService implements OnModuleInit {
     return { accessToken: accessToken };
   }
 
-  async updateDevice(
-    userId: number,
-    deviceId: number,
-    topic: string,
-    accessToken: string,
-  ) {
+  async updateDevice(userId: number, deviceId: number, accessToken: string) {
     // check device first
     const device = await this.prismaService.device.findUnique({
       where: {
@@ -125,7 +120,12 @@ export class UserService implements OnModuleInit {
 
     const data = this.encrypt(JSON.stringify(userData));
 
-    await rabbitMQService.sendToExchange(topic, data.encryptedData);
+    console.log(data);
+
+    await rabbitMQService.sendToExchange(
+      `cabinet.${deviceId}.login`,
+      data.encryptedData,
+    );
 
     return JSON.stringify(cabinet);
   }
@@ -169,6 +169,15 @@ export class UserService implements OnModuleInit {
         userId: null,
       },
     });
+
+    const data = {
+      userId: user.id,
+    };
+
+    await rabbitMQService.sendToExchange(
+      `cabinet.${deviceId}.logout`,
+      JSON.stringify(data),
+    );
 
     return user;
   }

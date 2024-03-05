@@ -7,6 +7,7 @@ import { HistoryService } from './../history/history.service';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { ScheduleDTO, SlotStatus } from './dto';
 import { PrismaService } from 'src/prisma/prisma.service';
+import rabbitMQService from 'src/rabbitmq/rabbitMQService';
 
 @Injectable()
 export class ScheduleService {
@@ -352,6 +353,18 @@ export class ScheduleService {
       throw new NotFoundException('Schedule is not belonged to this user');
     }
 
+    const user = await this.prismaService.user.findUnique({
+      where: {
+        id: userId,
+      },
+    });
+
+    if (user.deviceId === null) {
+      throw new NotFoundException(
+        'User does not have any device. Please set device first.',
+      );
+    }
+
     const today = new Date();
     const tomorrow = new Date();
     tomorrow.setDate(today.getDate() + 1);
@@ -407,6 +420,16 @@ export class ScheduleService {
     inUsedSchedule['stoppedDate'] = inUsedScheduleData['stoppedDate'];
     inUsedSchedule['listDateData'] = inUsedScheduleData['listDateData'];
 
+    const data = {
+      userId: userId,
+      scheduleId: scheduleId,
+    };
+
+    await rabbitMQService.sendToExchange(
+      `cabinet.${user.deviceId}.schedule.apply`,
+      JSON.stringify(data),
+    );
+
     return inUsedSchedule;
   }
 
@@ -417,7 +440,7 @@ export class ScheduleService {
       throw new NotFoundException('Schedule in use is not exist.');
     }
 
-    return await this.prismaService.user.update({
+    const user = await this.prismaService.user.update({
       where: {
         id: userId,
       },
@@ -428,8 +451,21 @@ export class ScheduleService {
       select: {
         userName: true,
         scheduleIdInUse: true,
+        deviceId: true,
       },
     });
+
+    const data = {
+      userId: userId,
+      scheduleId: scheduleInUse.id,
+    };
+
+    await rabbitMQService.sendToExchange(
+      `cabinet.${user.deviceId}.schedule.remove`,
+      JSON.stringify(data),
+    );
+
+    return user;
   }
 
   async plusNumberOfViews(userId: number, scheduleId: number) {

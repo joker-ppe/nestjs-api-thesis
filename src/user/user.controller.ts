@@ -33,10 +33,9 @@ export class UserController {
   setCabin(
     @GetUser('id') userId: number,
     @Param('id', ParseIntPipe) cabinetId: number,
-    @Query('topic') topic: string,
     @Query('accessToken') accessToken: string,
   ) {
-    return this.userService.updateDevice(userId, cabinetId, topic, accessToken);
+    return this.userService.updateDevice(userId, cabinetId, accessToken);
   }
 
   @ApiBearerAuth()

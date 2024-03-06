@@ -9,13 +9,20 @@ async function bootstrap() {
   // add middleware HERE!
   app.useGlobalPipes(new ValidationPipe());
 
-  app.use((req, res, next) => {
-    res.header('Access-Control-Allow-Origin', '*');
-    res.header(
-      'Access-Control-Allow-Headers',
-      'Origin, X-Requested-With, Content-Type, Accept',
-    );
-    next();
+  // app.use((req, res, next) => {
+  //   res.header('Access-Control-Allow-Origin', '*');
+  //   res.header(
+  //     'Access-Control-Allow-Headers',
+  //     'Origin, X-Requested-With, Content-Type, Accept',
+  //   );
+  //   next();
+  // });
+
+  app.enableCors({
+    origin: '*', // replace with your origin
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    allowedHeaders: 'Content-Type, Accept',
+    credentials: true,
   });
 
   const config = new DocumentBuilder()
@@ -50,6 +57,7 @@ async function bootstrap() {
 
   SwaggerModule.setup('docs', app, document);
 
+  app.enableCors();
   await app.listen(3003);
 }
 bootstrap();

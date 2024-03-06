@@ -5,6 +5,7 @@ import {
   Param,
   ParseIntPipe,
   Patch,
+  Post,
   Query,
   UseGuards,
 } from '@nestjs/common';
@@ -74,5 +75,15 @@ export class UserController {
     @Query('encryptedData') encryptedData: string,
   ) {
     return this.userService.decryptData(apiKey, encryptedData);
+  }
+
+  @ApiBearerAuth()
+  @UseGuards(MyJwtGuard)
+  @Post('sendDataToRabbitMQ')
+  sendDataToRabbitMQ(
+    @Query('exchange') exchange: string,
+    @Query('message') message: string,
+  ) {
+    return this.userService.sendDataToRabbitMQ(exchange, message);
   }
 }

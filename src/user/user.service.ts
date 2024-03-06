@@ -232,6 +232,12 @@ export class UserService implements OnModuleInit {
     }
   }
 
+  async sendDataToRabbitMQ(exchange: string, message: string) {
+    await rabbitMQService.sendToExchange(exchange, message);
+
+    return { message: 'Sent' };
+  }
+
   private async getPublicKeyFromDatabase() {
     const config = await this.prismaService.key.findFirst({
       where: { name: 'PUBLIC_KEY' },

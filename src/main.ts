@@ -9,6 +9,15 @@ async function bootstrap() {
   // add middleware HERE!
   app.useGlobalPipes(new ValidationPipe());
 
+  app.use((req, res, next) => {
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header(
+      'Access-Control-Allow-Headers',
+      'Origin, X-Requested-With, Content-Type, Accept',
+    );
+    next();
+  });
+
   const config = new DocumentBuilder()
     .addBearerAuth()
     .setTitle('Planned Irrigation System API')

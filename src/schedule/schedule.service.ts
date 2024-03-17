@@ -2,8 +2,8 @@ import {
   DateInScheduleInUseDTO,
   SlotInScheduleInUseDTO,
   parseDateToString,
-} from './dto/schedule.dto';
-import { HistoryService } from './../history/history.service';
+} from './dto';
+import { HistoryService } from '../history/history.service';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { ScheduleDTO, SlotStatus } from './dto';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -124,15 +124,16 @@ export class ScheduleService {
       scheduleIdInUse = user.scheduleIdInUse;
     }
 
-    const schedules = await this.getSchedules(userId);
+    if (scheduleId !== scheduleIdInUse) {
+      const schedules = await this.getSchedules(userId);
 
-    const isScheduleIdInList = schedules.some(
-      (schedule) =>
-        schedule.id === scheduleId || scheduleId === scheduleIdInUse,
-    );
+      const isScheduleIdInList = schedules.some(
+        (schedule) => schedule.id === scheduleId,
+      );
 
-    if (!isScheduleIdInList) {
-      throw new NotFoundException('Schedule is not belonged to this user');
+      if (!isScheduleIdInList) {
+        throw new NotFoundException('Schedule is not belonged to this user');
+      }
     }
 
     // delete old data of days and slots
@@ -143,7 +144,7 @@ export class ScheduleService {
       },
     });
 
-    return await this.prismaService.schedule.update({
+    return this.prismaService.schedule.update({
       where: {
         id: scheduleId,
       },

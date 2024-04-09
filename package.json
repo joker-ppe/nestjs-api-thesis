@@ -38,6 +38,7 @@
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.0",
     "dotenv": "^16.3.1",
+    "express": "^4.19.2",
     "git-last-commit": "^1.0.1",
     "luxon": "^3.4.4",
     "passport": "^0.6.0",

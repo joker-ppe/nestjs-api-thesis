@@ -6,6 +6,50 @@ import { isSlotStatus } from 'src/schedule/dto';
 export class SlotService {
   constructor(private prismaService: PrismaService) {}
 
+  async getSlotStatus(userId: number, scheduleId: number, day: string, slotIndex: number) {
+    // First, find the user by their userId
+    const user = await this.prismaService.user.findUnique({
+      where: {
+        id: userId,
+        scheduleIdInUse: scheduleId,
+      },
+    });
+
+    if (!user) {
+      throw new NotFoundException('User do not have schedule in use.');
+    }
+
+    const schedule = await this.prismaService.schedule.findUnique({
+      where: {
+        id: scheduleId,
+      },
+      include: {
+        slots: true,
+      },
+    });
+
+    if (!schedule) {
+      throw new NotFoundException('Schedule not found');
+    }
+
+    const scheduleInUse = JSON.parse(user.scheduleInUseData);
+
+    if (slotIndex < 1 || slotIndex > schedule['slots'].length) {
+      throw new NotFoundException('Invalid slot index');
+    }
+
+    const data = scheduleInUse['listDateData'];
+    const dayIndex = data.findIndex((item: any) => item['date'] === day);
+
+    if (dayIndex < 0) {
+      throw new NotFoundException('Invalid day. Day must be format dd/MM/yyyy');
+    }
+
+    const slot = data[dayIndex]['slots'][slotIndex - 1];
+
+    return slot;
+  }
+
   async updateSlotStatus(
     userId: number,
     scheduleId: number,

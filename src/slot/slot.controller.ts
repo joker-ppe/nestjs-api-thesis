@@ -1,5 +1,6 @@
 import {
   Controller,
+  Get,
   ParseIntPipe,
   Patch,
   Query,
@@ -24,7 +25,6 @@ export class SlotController {
     @Query('day') day: string,
     @Query('slotIndex', ParseIntPipe) slotIndex: number,
     @Query('note') note: string,
-
     @Query('status')
     status: string,
   ) {
@@ -36,5 +36,15 @@ export class SlotController {
       note,
       status,
     );
+  }
+
+  @Get('status')
+  getSlotStatus(
+    @GetUser('id') userId: number,
+    @Query('scheduleId', ParseIntPipe) scheduleId: number,
+    @Query('day') day: string,
+    @Query('slotIndex', ParseIntPipe) slotIndex: number,
+  ) {
+    return this.slotService.getSlotStatus(userId, scheduleId, day, slotIndex);
   }
 }

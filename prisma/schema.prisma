@@ -15,27 +15,28 @@ model User {
   userName       String   @unique
   email          String?  @unique
   hashedPassword String
-  firstName      String? //can be null
-  middleName     String? //can be null
+  firstName      String? // can be null
+  middleName     String? // can be null
   lastName       String?
-  address        String? //can be null
-  city           String? //can be null
-  country        String? //can be null
+  address        String? // can be null
+  city           String? // can be null
+  country        String? // can be null
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
-  photoUrl       String? //can be null
+  photoUrl       String? // can be null
 
-  scheduleIdInUse Int? //can be null
-  scheduleInUseData String? //can be null
+  scheduleIdInUse   Int? // can be null
+  scheduleInUseData String? // can be null
 
-  deviceId Int? @unique //can be null @unique @unique
-  deviceAccessToken String? //can be null
+  deviceId          Int?    @unique // can be null @unique @unique
+  deviceAccessToken String? // can be null
 
-  //relationship
-  schedules Schedule[]
-  histores  History[]
+  // relationship
+  schedules     Schedule[]
+  histores      History[]
+  notifications Notification[]
 
-  @@map("users") //users id "table's name" in Postgres SQL
+  @@map("users") // users id "table's name" in Postgres SQL
 }
 
 model Schedule {
@@ -50,8 +51,8 @@ model Schedule {
   imageData      String?
   numberOfDates  Int     @default(0)
 
-  longitude Float? //can be null
-  latitude  Float? //can be null
+  longitude Float? // can be null
+  latitude  Float? // can be null
 
   moistureThreshold    Float @default(-1)
   temperatureThreshold Float @default(-1)
@@ -66,7 +67,7 @@ model Schedule {
   updateContentAt DateTime @default(now())
 
   // relationship
-  userId Int //foreign key
+  userId Int // foreign key
   user   User @relation(fields: [userId], references: [id])
 
   // relationship with day
@@ -99,7 +100,6 @@ model Slot {
   schedule   Schedule @relation(fields: [scheduleId], references: [id])
 
   // slotStatuses SlotStatus[]
-
   @@map("slots")
 }
 
@@ -164,8 +164,7 @@ model Device {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
-  userId Int? @unique //can be null @unique
-  
+  userId Int? @unique // can be null @unique
 
   @@unique([macAddress, serialNumber])
   @@map("devices")
@@ -179,4 +178,18 @@ model Key {
   updatedAt DateTime @updatedAt
 
   @@map("keys")
+}
+
+model Notification {
+  id        Int      @id @default(autoincrement())
+  title     String
+  body      String
+  type      Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  userId Int
+  user   User @relation(fields: [userId], references: [id])
+
+  @@map("notifications")
 }

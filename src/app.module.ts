@@ -9,6 +9,7 @@ import { DayModule } from './day/day.module';
 import { SlotModule } from './slot/slot.module';
 import { HistoryModule } from './history/history.module';
 import { DeviceModule } from './device/device.module';
+import { NotificationModule } from './notification/notification.module';
 
 @Module({
   imports: [
@@ -24,7 +25,9 @@ import { DeviceModule } from './device/device.module';
     SlotModule,
     HistoryModule,
     DeviceModule,
+    NotificationModule,
   ],
+  // controllers: [NotificationController],
   // controllers: [DayController, SlotController, HistoryController],
   // providers: [DayService, SlotService, HistoryService],
   // controllers: [],

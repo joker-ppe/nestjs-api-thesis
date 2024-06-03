@@ -1,8 +1,8 @@
 import { Controller, Get, UseGuards } from '@nestjs/common';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { MyJwtGuard } from 'src/auth/guard';
 import { HistoryService } from './history.service';
 import { GetUser } from 'src/auth/decorator';
+import { MyJwtGuard } from '../auth/guard';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
 @UseGuards(MyJwtGuard)
 @ApiTags('History')
@@ -11,10 +11,10 @@ import { GetUser } from 'src/auth/decorator';
 export class HistoryController {
   constructor(private historyService: HistoryService) {}
 
-  @Get()
-  getHistory(@GetUser('id') userId: number) {
-    return this.historyService.getHistoryByUserId(userId);
-  }
+  // @Get()
+  // getHistory(@GetUser('id') userId: number) {
+  //   return this.historyService.getHistoryByUserId(userId);
+  // }
 
   // @Post()
   // insertHistory(

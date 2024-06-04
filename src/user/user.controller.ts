@@ -1,4 +1,5 @@
 import {
+  Body,
   Controller,
   Delete,
   Get,
@@ -15,6 +16,7 @@ import { GetUser } from '../auth/decorator/user.decorator';
 import { MyJwtGuard } from '../auth/guard';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { UserService } from './user.service';
+import { ProfileDTO } from '../auth/dto/register.user.dto';
 
 @ApiTags('User')
 @Controller('users')
@@ -26,6 +28,13 @@ export class UserController {
   @Get('profile')
   me(@GetUser() user: User) {
     return user;
+  }
+
+  @ApiBearerAuth()
+  @UseGuards(MyJwtGuard)
+  @Patch('profile')
+  updateProfile(@GetUser('id') userId: number, @Body() profileDTO: ProfileDTO) {
+    return this.userService.updateProfile(userId, profileDTO);
   }
 
   @ApiBearerAuth()

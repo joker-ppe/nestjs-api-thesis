@@ -3,6 +3,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import * as crypto from 'crypto';
 import rabbitMQService from '../rabbitmq/rabbitMQService'; // Adjust the path according to your project structure
 import { AuthService } from 'src/auth/auth.service';
+import { ProfileDTO } from '../auth/dto/register.user.dto';
 
 @Injectable()
 export class UserService implements OnModuleInit {
@@ -17,6 +18,19 @@ export class UserService implements OnModuleInit {
   async onModuleInit() {
     this.publicKey = await this.getPublicKeyFromDatabase();
     this.privateKey = await this.getPrivateKeyFromDatabase();
+  }
+
+  async updateProfile(userId: number, data: ProfileDTO) {
+    return this.prismaService.user.update({
+      where: {
+        id: userId,
+      },
+      data: {
+        firstName: data.firstName,
+        lastName: data.lastName,
+        photoUrl: data.photoUrl,
+      },
+    });
   }
 
   async renewAccessToken(

@@ -30,6 +30,11 @@ export class UserService implements OnModuleInit {
         lastName: data.lastName,
         photoUrl: data.photoUrl,
       },
+      select: {
+        firstName: true,
+        lastName: true,
+        photoUrl: true,
+      },
     });
   }
 

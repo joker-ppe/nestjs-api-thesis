@@ -21,7 +21,7 @@ export class UserService implements OnModuleInit {
   }
 
   async updateProfile(userId: number, data: ProfileDTO) {
-    return this.prismaService.user.update({
+    const user = await this.prismaService.user.update({
       where: {
         id: userId,
       },
@@ -30,12 +30,9 @@ export class UserService implements OnModuleInit {
         lastName: data.lastName,
         photoUrl: data.photoUrl,
       },
-      select: {
-        firstName: true,
-        lastName: true,
-        photoUrl: true,
-      },
     });
+    delete user.hashedPassword;
+    return user;
   }
 
   async renewAccessToken(

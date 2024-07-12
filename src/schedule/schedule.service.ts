@@ -343,6 +343,97 @@ export class ScheduleService {
     }
   }
 
+  // async updateScheduleInUse(userId: number, scheduleId: number) {
+  //   const schedules = await this.getSchedules(userId);
+  //
+  //   const inUsedSchedule = schedules.find(
+  //     (schedule) => schedule.id === scheduleId,
+  //   );
+  //
+  //   if (!inUsedSchedule) {
+  //     throw new NotFoundException('Schedule is not belonged to this user');
+  //   }
+  //
+  //   const user = await this.prismaService.user.findUnique({
+  //     where: {
+  //       id: userId,
+  //     },
+  //   });
+  //
+  //   if (user.deviceId === null) {
+  //     throw new NotFoundException(
+  //       'User does not have any device. Please set device first.',
+  //     );
+  //   }
+  //
+  //   const today = new Date();
+  //   const tomorrow = new Date();
+  //   tomorrow.setDate(today.getDate() + 1);
+  //   const endDate = new Date();
+  //   endDate.setDate(today.getDate() + inUsedSchedule.numberOfDates);
+  //
+  //   const listDateData = new Array<DateInScheduleInUseDTO>();
+  //
+  //   for (let i = 0; i < inUsedSchedule.numberOfDates; i++) {
+  //     const dateData = new DateInScheduleInUseDTO();
+  //     dateData.index = i + 1;
+  //     const date = new Date();
+  //     date.setDate(today.getDate() + i + 1);
+  //     dateData.date = parseDateToString(date);
+  //     dateData.slots = new Array<SlotInScheduleInUseDTO>();
+  //
+  //     for (let j = 0; j < inUsedSchedule.slots.length; j++) {
+  //       const slotData = new SlotInScheduleInUseDTO();
+  //       slotData.index = j + 1;
+  //       slotData.status = SlotStatus.NOT_YET;
+  //
+  //       dateData.slots.push(slotData);
+  //     }
+  //
+  //     listDateData.push(dateData);
+  //   }
+  //
+  //   const inUsedScheduleData = {};
+  //
+  //   inUsedScheduleData['registrationDate'] = parseDateToString(today);
+  //   inUsedScheduleData['startedDate'] = parseDateToString(tomorrow);
+  //   inUsedScheduleData['stoppedDate'] = parseDateToString(endDate);
+  //   inUsedScheduleData['listDateData'] = listDateData;
+  //
+  //   await this.prismaService.user.update({
+  //     where: {
+  //       id: userId,
+  //     },
+  //     data: {
+  //       scheduleIdInUse: scheduleId,
+  //       scheduleInUseData: JSON.stringify(inUsedScheduleData),
+  //     },
+  //     select: {
+  //       id: true,
+  //       userName: true,
+  //       scheduleIdInUse: true,
+  //       scheduleInUseData: false,
+  //     },
+  //   });
+  //
+  //   inUsedSchedule['registrationDate'] = inUsedScheduleData['registrationDate'];
+  //   inUsedSchedule['startedDate'] = inUsedScheduleData['startedDate'];
+  //   inUsedSchedule['stoppedDate'] = inUsedScheduleData['stoppedDate'];
+  //   inUsedSchedule['listDateData'] = inUsedScheduleData['listDateData'];
+  //
+  //   const data = {
+  //     userId: userId,
+  //     scheduleId: scheduleId,
+  //   };
+  //
+  //   await rabbitMQService.sendToExchange(
+  //     `cabinet.${user.deviceId}.schedule.apply`,
+  //     JSON.stringify(data),
+  //   );
+  //
+  //   return inUsedSchedule;
+  // }
+
   async updateScheduleInUse(userId: number, scheduleId: number) {
     const schedules = await this.getSchedules(userId);
 
@@ -368,7 +459,7 @@ export class ScheduleService {
 
     const today = new Date();
     const tomorrow = new Date();
-    tomorrow.setDate(today.getDate() + 1);
+    tomorrow.setDate(today.getDate());
     const endDate = new Date();
     endDate.setDate(today.getDate() + inUsedSchedule.numberOfDates);
 
@@ -378,7 +469,7 @@ export class ScheduleService {
       const dateData = new DateInScheduleInUseDTO();
       dateData.index = i + 1;
       const date = new Date();
-      date.setDate(today.getDate() + i + 1);
+      date.setDate(today.getDate() + i);
       dateData.date = parseDateToString(date);
       dateData.slots = new Array<SlotInScheduleInUseDTO>();
 

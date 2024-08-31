@@ -95,4 +95,14 @@ export class UserController {
   ) {
     return this.userService.sendDataToRabbitMQ(exchange, message);
   }
+
+  @Post('sendDataCache')
+  sendDataCache(@Query('message') message: string) {
+    return this.userService.sendDataCache(message);
+  }
+
+  @Get('getDataCache')
+  getDataCache() {
+    return this.userService.getDataCache();
+  }
 }

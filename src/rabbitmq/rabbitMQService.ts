@@ -17,7 +17,7 @@ const sendToExchange = async (
     durable: false,
     autoDelete: true,
   });
-  await channel.publish(exchange, '', Buffer.from(data));
+  channel.publish(exchange, '', Buffer.from(data));
   console.log(`Data sent to exchange: ${exchange}`);
 
   await channel.close();

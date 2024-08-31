@@ -7,13 +7,29 @@ import { ProfileDTO } from '../auth/dto/register.user.dto';
 
 @Injectable()
 export class UserService implements OnModuleInit {
+  private list: number[] = [];
+  private maxSize: number = 300;
+  private publicKey: string;
+  private privateKey: string;
+
   constructor(
     private prismaService: PrismaService,
     private authService: AuthService,
   ) {}
 
-  private publicKey: string;
-  private privateKey: string;
+  add(value: number): void {
+    if (typeof value !== 'number') {
+      throw new Error('Value must be a number');
+    }
+    if (this.list.length >= this.maxSize) {
+      this.list.shift(); // Remove the oldest value
+    }
+    this.list.push(value);
+  }
+
+  getList(): number[] {
+    return this.list;
+  }
 
   async onModuleInit() {
     this.publicKey = await this.getPublicKeyFromDatabase();
@@ -215,12 +231,6 @@ export class UserService implements OnModuleInit {
     return this.encrypt(data);
   }
 
-  private encrypt(data: string): { encryptedData: string } {
-    const buffer = Buffer.from(data, 'utf8');
-    const encrypted = crypto.publicEncrypt(this.publicKey, buffer);
-    return { encryptedData: encrypted.toString('base64') };
-  }
-
   async decryptData(
     apiKey: string,
     data: string,
@@ -238,6 +248,18 @@ export class UserService implements OnModuleInit {
     return this.decryptDataWithPrivateKey(data);
   }
 
+  async sendDataToRabbitMQ(exchange: string, message: string) {
+    await rabbitMQService.sendToExchange(exchange, message);
+
+    return { message: 'Sent' };
+  }
+
+  private encrypt(data: string): { encryptedData: string } {
+    const buffer = Buffer.from(data, 'utf8');
+    const encrypted = crypto.publicEncrypt(this.publicKey, buffer);
+    return { encryptedData: encrypted.toString('base64') };
+  }
+
   private decryptDataWithPrivateKey(data: string): { decryptedData: string } {
     try {
       const buffer = Buffer.from(data, 'base64');
@@ -246,12 +268,6 @@ export class UserService implements OnModuleInit {
     } catch (error) {
       throw new NotFoundException('Invalid encryptedData');
     }
-  }
-
-  async sendDataToRabbitMQ(exchange: string, message: string) {
-    await rabbitMQService.sendToExchange(exchange, message);
-
-    return { message: 'Sent' };
   }
 
   private async getPublicKeyFromDatabase() {
@@ -266,5 +282,15 @@ export class UserService implements OnModuleInit {
       where: { name: 'PRIVATE_KEY' },
     });
     return config.key;
+  }
+
+  async sendDataCache(message: string) {
+    this.add(parseFloat(message));
+    await rabbitMQService.sendToExchange('cacheQAZ!@#', message);
+    return { message: 'Sent' };
+  }
+
+  getDataCache() {
+    return JSON.stringify(this.getList());
   }
 }

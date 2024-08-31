@@ -197,7 +197,7 @@ export class ScheduleService {
       throw new NotFoundException('Schedule is in using.');
     }
 
-    return await this.prismaService.schedule.update({
+    return this.prismaService.schedule.update({
       where: {
         id: scheduleId,
       },

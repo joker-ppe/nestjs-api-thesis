@@ -7,7 +7,7 @@ import { ProfileDTO } from '../auth/dto/register.user.dto';
 
 @Injectable()
 export class UserService implements OnModuleInit {
-  private list: number[] = [];
+  private map: Map<string, number[]> = new Map();
   private maxSize: number = 300;
   private publicKey: string;
   private privateKey: string;
@@ -17,18 +17,22 @@ export class UserService implements OnModuleInit {
     private authService: AuthService,
   ) {}
 
-  add(value: number): void {
+  add(key: string, value: number): void {
     if (typeof value !== 'number') {
       throw new Error('Value must be a number');
     }
-    if (this.list.length >= this.maxSize) {
-      this.list.shift(); // Remove the oldest value
+    if (!this.map.has(key)) {
+      this.map.set(key, []);
     }
-    this.list.push(value);
+    const list = this.map.get(key);
+    if (list.length >= this.maxSize) {
+      list.shift(); // Remove the oldest value
+    }
+    list.push(value);
   }
 
-  getList(): number[] {
-    return this.list;
+  getList(key: string): number[] {
+    return this.map.get(key) || [];
   }
 
   async onModuleInit() {
@@ -284,13 +288,13 @@ export class UserService implements OnModuleInit {
     return config.key;
   }
 
-  async sendDataCache(message: string) {
-    this.add(parseFloat(message));
-    await rabbitMQService.sendToExchange('cacheQAZ!@#', message);
+  async sendDataCache(exchange: string, message: string) {
+    this.add(exchange, parseFloat(message));
+    await rabbitMQService.sendToExchange(exchange, message);
     return { message: 'Sent' };
   }
 
-  getDataCache() {
-    return JSON.stringify(this.getList());
+  getDataCache(exchange: string) {
+    return JSON.stringify(this.getList(exchange));
   }
 }

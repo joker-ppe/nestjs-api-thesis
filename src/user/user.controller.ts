@@ -97,12 +97,15 @@ export class UserController {
   }
 
   @Post('sendDataCache')
-  sendDataCache(@Query('message') message: string) {
-    return this.userService.sendDataCache(message);
+  sendDataCache(
+    @Query('exchange') exchange: string,
+    @Query('message') message: string,
+  ) {
+    return this.userService.sendDataCache(exchange, message);
   }
 
   @Get('getDataCache')
-  getDataCache() {
-    return this.userService.getDataCache();
+  getDataCache(@Query('exchange') exchange: string) {
+    return this.userService.getDataCache(exchange);
   }
 }
